@@ -122,8 +122,8 @@ async function submitWork() {
 
     const files = document.getElementById("images").files;
 
-    if (files.length < 3) {
-        msg.textContent = "ต้องอัปโหลดรูปอย่างน้อย 3 รูป!";
+    if (files.length === 0) {
+        msg.textContent = "กรุณาเลือกรูปอย่างน้อย 1 รูป!";
         msg.style.color = "red";
         return;
     }
