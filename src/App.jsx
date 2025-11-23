@@ -134,17 +134,8 @@ const App = () => {
   };
 
   const getGroupedSubmissions = () => {
-    const filtered = submissions.filter(sub => {
-      if (!searchTerm) return true;
-      if (searchType === 'name') {
-        return sub.userName.toLowerCase().includes(searchTerm.toLowerCase());
-      } else {
-        return sub.studentId.includes(searchTerm);
-      }
-    });
-
     const grouped = {};
-    filtered.forEach(sub => {
+    submissions.forEach(sub => {
       const key = sub.studentId;
       if (!grouped[key]) {
         grouped[key] = [];
@@ -511,7 +502,36 @@ const App = () => {
   };
 
   const AdminPage = () => {
-    const groupedSubmissions = getGroupedSubmissions();
+    const [localSearchTerm, setLocalSearchTerm] = useState('');
+    const [localSearchType, setLocalSearchType] = useState('name');
+    
+    const getFilteredSubmissions = () => {
+      const filtered = submissions.filter(sub => {
+        if (!localSearchTerm) return true;
+        if (localSearchType === 'name') {
+          return sub.userName.toLowerCase().includes(localSearchTerm.toLowerCase());
+        } else {
+          return sub.studentId.includes(localSearchTerm);
+        }
+      });
+
+      const grouped = {};
+      filtered.forEach(sub => {
+        const key = sub.studentId;
+        if (!grouped[key]) {
+          grouped[key] = [];
+        }
+        grouped[key].push(sub);
+      });
+      
+      Object.keys(grouped).forEach(key => {
+        grouped[key].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+      });
+      
+      return grouped;
+    };
+    
+    const groupedSubmissions = getFilteredSubmissions();
     const [editingId, setEditingId] = useState(null);
     const [editData, setEditData] = useState({});
     const [expandedCards, setExpandedCards] = useState({});
@@ -553,16 +573,16 @@ const App = () => {
           </button>
         </div>
         <div style={{ marginBottom: '25px', display: 'flex', gap: '10px', backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #ddd' }}>
-          <select value={searchType} onChange={(e) => setSearchType(e.target.value)} style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '180px' }}>
+          <select value={localSearchType} onChange={(e) => setLocalSearchType(e.target.value)} style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '180px' }}>
             <option value="name">ค้นหาด้วยชื่อ</option>
             <option value="id">ค้นหาด้วยรหัสนักเรียน</option>
           </select>
           <div style={{ position: 'relative', flex: 1 }}>
             <input
               type="text"
-              placeholder={`ค้นหา${searchType === 'name' ? 'ชื่อนักเรียน' : 'รหัสนักเรียน'}...`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={`ค้นหา${localSearchType === 'name' ? 'ชื่อนักเรียน' : 'รหัสนักเรียน'}...`}
+              value={localSearchTerm}
+              onChange={(e) => setLocalSearchTerm(e.target.value)}
               style={{ width: '100%', padding: '10px 40px 10px 10px', border: '1px solid #ddd', borderRadius: '4px' }}
             />
             <Search size={20} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
@@ -664,7 +684,7 @@ const App = () => {
         {Object.keys(groupedSubmissions).length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid #ddd' }}>
             <p style={{ fontSize: '18px', color: '#666', margin: 0 }}>
-              {searchTerm ? 'ไม่พบข้อมูลที่ค้นหา' : 'ยังไม่มีงานที่ส่งมา'}
+              {localSearchTerm ? 'ไม่พบข้อมูลที่ค้นหา' : 'ยังไม่มีงานที่ส่งมา'}
             </p>
           </div>
         )}
