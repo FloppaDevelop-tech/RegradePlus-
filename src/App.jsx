@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-import { Search, LogOut, Upload, Eye, Edit2, Check, X } from 'lucide-react';
+import { Search, LogOut, Upload, Eye, Edit2, Check, X, AlertCircle, CheckCircle } from 'lucide-react';
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -9,9 +8,18 @@ const App = () => {
   const [submissions, setSubmissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('name');
+  const [popup, setPopup] = useState({ show: false, message: '', type: 'success' });
 
   // Admin Secret Code
-  const ADMIN_SECRET_CODE = 'ADMIN2025'; // เปลี่ยนรหัสนี้ได้ตามต้องการ
+  const ADMIN_SECRET_CODE = 'ADMIN2025';
+
+  // Popup Function
+  const showPopup = (message, type = 'success') => {
+    setPopup({ show: true, message, type });
+    setTimeout(() => {
+      setPopup({ show: false, message: '', type: 'success' });
+    }, 3000);
+  };
 
   // Load data on mount
   useEffect(() => {
@@ -43,21 +51,19 @@ const App = () => {
   // Auth Functions
   const handleRegister = (email, password, name, adminCode = '') => {
     if (!email.endsWith('@taweethapisek.ac.th')) {
-      alert('กรุณาใช้ Email โรงเรียน (@taweethapisek.ac.th)');
+      showPopup('กรุณาใช้ Email โรงเรียน (@taweethapisek.ac.th)', 'error');
       return;
     }
 
-    // ตรวจสอบว่าจะเป็น Admin หรือไม่
     const isAdmin = adminCode === ADMIN_SECRET_CODE;
     
     if (adminCode && !isAdmin) {
-      alert('รหัส Admin ไม่ถูกต้อง');
+      showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
       return;
     }
 
-    // ตรวจสอบว่า email ซ้ำหรือไม่
     if (users.find(u => u.email === email)) {
-      alert('Email นี้ถูกใช้งานแล้ว');
+      showPopup('Email นี้ถูกใช้งานแล้ว', 'error');
       return;
     }
     
@@ -71,7 +77,7 @@ const App = () => {
     
     const updatedUsers = [...users, newUser];
     saveUsers(updatedUsers);
-    alert(isAdmin ? 'สมัครสมาชิก Admin สำเร็จ!' : 'สมัครสมาชิกสำเร็จ!');
+    showPopup(isAdmin ? 'สมัครสมาชิก Admin สำเร็จ!' : 'สมัครสมาชิกสำเร็จ!', 'success');
     setPage('login');
   };
 
@@ -81,7 +87,7 @@ const App = () => {
       setCurrentUser(user);
       setPage(user.isAdmin ? 'admin' : 'submit');
     } else {
-      alert('Email หรือ Password ไม่ถูกต้อง');
+      showPopup('Email หรือ Password ไม่ถูกต้อง', 'error');
     }
   };
 
@@ -104,7 +110,7 @@ const App = () => {
     
     const updatedSubmissions = [...submissions, newSubmission];
     saveSubmissions(updatedSubmissions);
-    alert('ส่งงานสำเร็จ!');
+    showPopup('ส่งงานสำเร็จ!', 'success');
     setPage('history');
   };
 
@@ -123,12 +129,10 @@ const App = () => {
     saveSubmissions(updatedSubmissions);
   };
 
-  // Get user submissions
   const getUserSubmissions = () => {
     return submissions.filter(sub => sub.userId === currentUser.id);
   };
 
-  // Group submissions by student for admin
   const getGroupedSubmissions = () => {
     const filtered = submissions.filter(sub => {
       if (!searchTerm) return true;
@@ -148,7 +152,6 @@ const App = () => {
       grouped[key].push(sub);
     });
     
-    // เรียงงานจากใหม่ไปเก่า
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     });
@@ -157,6 +160,50 @@ const App = () => {
   };
 
   // Components
+  const PopupNotification = () => {
+    if (!popup.show) return null;
+
+    return (
+      <div style={{ 
+        position: 'fixed', 
+        top: '20px', 
+        right: '20px', 
+        zIndex: 9999,
+        animation: 'slideIn 0.3s ease-out'
+      }}>
+        <div style={{ 
+          backgroundColor: popup.type === 'success' ? '#4CAF50' : '#f44336',
+          color: 'white',
+          padding: '16px 24px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          minWidth: '300px',
+          maxWidth: '500px'
+        }}>
+          {popup.type === 'success' ? <CheckCircle size={24} /> : <AlertCircle size={24} />}
+          <div style={{ flex: 1, fontSize: '15px', fontWeight: '500' }}>{popup.message}</div>
+          <button 
+            onClick={() => setPopup({ show: false, message: '', type: 'success' })}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: 'white', 
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const LoginPage = () => {
     const [isRegister, setIsRegister] = useState(false);
     const [formData, setFormData] = useState({ email: '', password: '', name: '', adminCode: '' });
@@ -288,7 +335,7 @@ const App = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
       if (formData.images.length === 0) {
-        alert('กรุณาอัปโหลดรูปงานอย่างน้อย 1 รูป');
+        showPopup('กรุณาอัปโหลดรูปงานอย่างน้อย 1 รูป', 'error');
         return;
       }
       handleSubmitWork(formData);
@@ -628,6 +675,19 @@ const App = () => {
   // Render
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+      <PopupNotification />
+      <style>{`
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
       {!currentUser && <LoginPage />}
       {currentUser && !currentUser.isAdmin && page === 'submit' && <SubmitWorkPage />}
       {currentUser && !currentUser.isAdmin && page === 'history' && <HistoryPage />}
@@ -637,4 +697,3 @@ const App = () => {
 };
 
 export default App;
-
