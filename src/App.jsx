@@ -12,6 +12,9 @@ const App = () => {
   const [viewImage, setViewImage] = useState(null);
 
   // Admin Secret Code
+  // SECURITY WARNING: Storing secrets in client-side code is not secure.
+  // Anyone can view this code by inspecting the source.
+  // For production, use a backend server for authentication.
   const ADMIN_SECRET_CODE = 'ADMIN2025';
 
   // Popup Function
@@ -31,7 +34,7 @@ const App = () => {
     try {
       const usersData = localStorage.getItem('users');
       const submissionsData = localStorage.getItem('submissions');
-      
+
       if (usersData) setUsers(JSON.parse(usersData));
       if (submissionsData) setSubmissions(JSON.parse(submissionsData));
     } catch (error) {
@@ -39,14 +42,32 @@ const App = () => {
     }
   };
 
+  // Storage Helpers with Error Handling
+  const saveToStorage = (key, data) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+      return true;
+    } catch (error) {
+      if (error.name === 'QuotaExceededError') {
+        showPopup('พื้นที่จัดเก็บเต็ม! กรุณาลบข้อมูลเก่าหรือลดขนาดรูปภาพ', 'error');
+      } else {
+        showPopup('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+        console.error('Storage error:', error);
+      }
+      return false;
+    }
+  };
+
   const saveUsers = (newUsers) => {
-    localStorage.setItem('users', JSON.stringify(newUsers));
-    setUsers(newUsers);
+    if (saveToStorage('users', newUsers)) {
+      setUsers(newUsers);
+    }
   };
 
   const saveSubmissions = (newSubmissions) => {
-    localStorage.setItem('submissions', JSON.stringify(newSubmissions));
-    setSubmissions(newSubmissions);
+    if (saveToStorage('submissions', newSubmissions)) {
+      setSubmissions(newSubmissions);
+    }
   };
 
   // Auth Functions
@@ -57,7 +78,7 @@ const App = () => {
     }
 
     const isAdmin = adminCode === ADMIN_SECRET_CODE;
-    
+
     if (adminCode && !isAdmin) {
       showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
       return;
@@ -67,7 +88,7 @@ const App = () => {
       showPopup('Email นี้ถูกใช้งานแล้ว', 'error');
       return;
     }
-    
+
     const newUser = {
       id: Date.now().toString(),
       email,
@@ -75,7 +96,7 @@ const App = () => {
       name,
       isAdmin
     };
-    
+
     const updatedUsers = [...users, newUser];
     saveUsers(updatedUsers);
     showPopup(isAdmin ? 'สมัครสมาชิก Admin สำเร็จ!' : 'สมัครสมาชิกสำเร็จ!', 'success');
@@ -108,7 +129,7 @@ const App = () => {
       submittedAt: new Date().toISOString(),
       status: 'ยังไม่ตรวจ'
     };
-    
+
     const updatedSubmissions = [...submissions, newSubmission];
     saveSubmissions(updatedSubmissions);
     showPopup('ส่งงานสำเร็จ!', 'success');
@@ -178,11 +199,11 @@ const App = () => {
       }
       grouped[key].push(sub);
     });
-    
+
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     });
-    
+
     return grouped;
   };
 
@@ -191,44 +212,44 @@ const App = () => {
     if (!viewImage) return null;
 
     return (
-      <div 
-        style={{ 
-          position: 'fixed', 
-          top: 0, 
-          left: 0, 
-          right: 0, 
-          bottom: 0, 
-          backgroundColor: 'rgba(0,0,0,0.9)', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           zIndex: 10000,
           cursor: 'pointer'
-        }} 
+        }}
         onClick={() => setViewImage(null)}
       >
         <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
-          <img 
-            src={viewImage} 
-            alt="Full view" 
-            style={{ 
-              maxWidth: '100%', 
-              maxHeight: '90vh', 
+          <img
+            src={viewImage}
+            alt="Full view"
+            style={{
+              maxWidth: '100%',
+              maxHeight: '90vh',
               objectFit: 'contain',
               borderRadius: '8px'
-            }} 
+            }}
           />
-          <button 
+          <button
             onClick={() => setViewImage(null)}
-            style={{ 
-              position: 'absolute', 
-              top: '-40px', 
-              right: '0', 
-              backgroundColor: 'white', 
-              border: 'none', 
-              borderRadius: '50%', 
-              width: '35px', 
-              height: '35px', 
+            style={{
+              position: 'absolute',
+              top: '-40px',
+              right: '0',
+              backgroundColor: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '35px',
+              height: '35px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -248,14 +269,14 @@ const App = () => {
     if (!popup.show) return null;
 
     return (
-      <div style={{ 
-        position: 'fixed', 
-        top: '20px', 
-        right: '20px', 
+      <div style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
         zIndex: 9999,
         animation: 'slideIn 0.3s ease-out'
       }}>
-        <div style={{ 
+        <div style={{
           backgroundColor: popup.type === 'success' ? '#4CAF50' : '#f44336',
           color: 'white',
           padding: '16px 24px',
@@ -269,12 +290,12 @@ const App = () => {
         }}>
           {popup.type === 'success' ? <CheckCircle size={24} /> : <AlertCircle size={24} />}
           <div style={{ flex: 1, fontSize: '15px', fontWeight: '500' }}>{popup.message}</div>
-          <button 
+          <button
             onClick={() => setPopup({ show: false, message: '', type: 'success' })}
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: 'white', 
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
               cursor: 'pointer',
               padding: '4px',
               display: 'flex',
@@ -339,7 +360,7 @@ const App = () => {
               style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
             />
           </div>
-          
+
           {isRegister && (
             <div style={{ marginBottom: '15px' }}>
               <label style={{ display: 'flex', alignItems: 'center' }}>
@@ -351,7 +372,7 @@ const App = () => {
                 />
                 ฉันเป็น Admin (ต้องมีรหัส Admin)
               </label>
-              
+
               {showAdminCode && (
                 <div style={{ marginTop: '10px' }}>
                   <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัส Admin:</label>
@@ -366,7 +387,7 @@ const App = () => {
               )}
             </div>
           )}
-          
+
           <button type="submit" style={{ width: '100%', padding: '12px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', fontSize: '16px' }}>
             {isRegister ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
           </button>
@@ -400,15 +421,42 @@ const App = () => {
 
     const handleImageUpload = (e) => {
       const files = Array.from(e.target.files);
+
+      // Limit total images
+      if (formData.images.length + files.length > 5) {
+        showPopup('อัปโหลดได้สูงสุด 5 รูปต่อครั้ง', 'error');
+        e.target.value = ''; // Reset input
+        return;
+      }
+
       Promise.all(files.map(file => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
+          // Validate file size (max 500KB)
+          if (file.size > 500 * 1024) {
+            showPopup(`รูป ${file.name} ใหญ่เกินไป (ต้องไม่เกิน 500KB)`, 'error');
+            reject('File too large');
+            return;
+          }
+
           const reader = new FileReader();
           reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = () => reject('Read error');
           reader.readAsDataURL(file);
         });
-      })).then(images => {
-        setFormData({ ...formData, images: [...formData.images, ...images] });
-      });
+      }))
+        .then(images => {
+          // Filter out rejected files
+          const validImages = images.filter(img => img);
+          if (validImages.length > 0) {
+            setFormData(prev => ({ ...prev, images: [...prev.images, ...validImages] }));
+          }
+        })
+        .catch(err => {
+          console.error('Image upload error:', err);
+        })
+        .finally(() => {
+          e.target.value = ''; // Always reset input to allow selecting same file again
+        });
     };
 
     const removeImage = (index) => {
@@ -487,7 +535,7 @@ const App = () => {
               <input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
             </div>
           </div>
-          
+
           <div style={{ marginTop: '20px' }}>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รูปงานแก้: *</label>
             <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
@@ -513,10 +561,10 @@ const App = () => {
   const HistoryPage = () => {
     const [localSearchTerm, setLocalSearchTerm] = useState('');
     const [localSearchType, setLocalSearchType] = useState('subject');
-    
+
     const getFilteredSubmissions = () => {
       let filtered = getUserSubmissions();
-      
+
       if (localSearchTerm) {
         filtered = filtered.filter(sub => {
           if (localSearchType === 'subject') {
@@ -526,15 +574,15 @@ const App = () => {
           }
         });
       }
-      
+
       return filtered.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     };
-    
+
     const userSubmissions = getFilteredSubmissions();
     const [selectedSubmission, setSelectedSubmission] = useState(null);
 
     const getStatusColor = (status) => {
-      switch(status) {
+      switch (status) {
         case 'ตรวจแล้ว': return '#4CAF50';
         case 'กำลังตรวจ': return '#2196F3';
         default: return '#FFC107';
@@ -552,7 +600,7 @@ const App = () => {
             </button>
           </div>
         </div>
-        
+
         <div style={{ marginBottom: '25px', display: 'flex', gap: '10px', backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #ddd' }}>
           <select value={localSearchType} onChange={(e) => setLocalSearchType(e.target.value)} style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '180px' }}>
             <option value="subject">ค้นหาด้วยชื่อวิชา</option>
@@ -569,7 +617,7 @@ const App = () => {
             <Search size={20} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
           </div>
         </div>
-        
+
         {userSubmissions.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '50px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid #ddd' }}>
             <p style={{ fontSize: '18px', color: '#666' }}>
@@ -613,32 +661,32 @@ const App = () => {
                   </div>
                 )}
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <strong>สถานะ:</strong> 
+                  <strong>สถานะ:</strong>
                   <span style={{ marginLeft: '10px', padding: '5px 12px', backgroundColor: getStatusColor(selectedSubmission.status), color: 'white', borderRadius: '4px', fontWeight: 'bold' }}>
                     {selectedSubmission.status}
                   </span>
                 </div>
               </div>
-              
+
               {selectedSubmission.images && selectedSubmission.images.length > 0 && (
                 <div style={{ marginTop: '20px' }}>
                   <strong style={{ display: 'block', marginBottom: '10px' }}>รูปงาน ({selectedSubmission.images.length} รูป):</strong>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     {selectedSubmission.images.map((img, idx) => (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         style={{ position: 'relative', cursor: 'pointer' }}
                         onClick={() => setViewImage(img)}
                       >
-                        <img 
-                          src={img} 
-                          alt={`work ${idx + 1}`} 
-                          style={{ width: '100%', height: '200px', objectFit: 'cover', border: '2px solid #ddd', borderRadius: '4px' }} 
+                        <img
+                          src={img}
+                          alt={`work ${idx + 1}`}
+                          style={{ width: '100%', height: '200px', objectFit: 'cover', border: '2px solid #ddd', borderRadius: '4px' }}
                         />
-                        <div style={{ 
-                          position: 'absolute', 
-                          top: '50%', 
-                          left: '50%', 
+                        <div style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
                           transform: 'translate(-50%, -50%)',
                           backgroundColor: 'rgba(0,0,0,0.6)',
                           color: 'white',
@@ -648,7 +696,7 @@ const App = () => {
                           transition: 'opacity 0.3s',
                           pointerEvents: 'none'
                         }}
-                        className="zoom-icon">
+                          className="zoom-icon">
                           <ZoomIn size={24} />
                         </div>
                       </div>
@@ -668,7 +716,7 @@ const App = () => {
     const [localSearchTerm, setLocalSearchTerm] = useState('');
     const [localSearchType, setLocalSearchType] = useState('name');
     const [confirmDelete, setConfirmDelete] = useState(null);
-    
+
     const getFilteredSubmissions = () => {
       const filtered = submissions.filter(sub => {
         if (!localSearchTerm) return true;
@@ -687,14 +735,14 @@ const App = () => {
         }
         grouped[key].push(sub);
       });
-      
+
       Object.keys(grouped).forEach(key => {
         grouped[key].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
       });
-      
+
       return grouped;
     };
-    
+
     const groupedSubmissions = getFilteredSubmissions();
     const [editingId, setEditingId] = useState(null);
     const [editData, setEditData] = useState({});
@@ -723,7 +771,7 @@ const App = () => {
     };
 
     const getStatusColor = (status) => {
-      switch(status) {
+      switch (status) {
         case 'ตรวจแล้ว': return '#4CAF50';
         case 'กำลังตรวจ': return '#2196F3';
         default: return '#FFC107';
@@ -736,8 +784,8 @@ const App = () => {
           <div>
             <h2 style={{ margin: 0 }}>Admin Panel</h2>
             <p style={{ margin: '5px 0', color: '#666' }}>
-              จำนวนนักเรียนที่ส่งงาน: {Object.keys(groupedSubmissions).length} คน | 
-              งานทั้งหมด: {submissions.length} งาน | 
+              จำนวนนักเรียนที่ส่งงาน: {Object.keys(groupedSubmissions).length} คน |
+              งานทั้งหมด: {submissions.length} งาน |
               ตรวจแล้ว: {submissions.filter(s => s.status === 'ตรวจแล้ว').length} งาน
             </p>
           </div>
@@ -765,24 +813,24 @@ const App = () => {
           {Object.entries(groupedSubmissions).map(([studentId, subs]) => {
             const isExpanded = expandedCards[studentId];
             const displaySubs = isExpanded ? subs : subs.slice(0, 1);
-            
+
             return (
               <div key={studentId} style={{ border: '2px solid #ddd', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
                 <div style={{ marginBottom: '15px' }}>
                   <h3 style={{ margin: '0 0 8px 0' }}>{subs[0].studentName}</h3>
                   <p style={{ color: '#666', margin: '0' }}>รหัส: {studentId} | ชั้น: {subs[0].grade}</p>
                 </div>
-                
+
                 <div style={{ backgroundColor: '#2196F3', color: 'white', padding: '10px', marginBottom: '10px', borderRadius: '4px', fontWeight: 'bold', textAlign: 'center' }}>
                   งานทั้งหมด: {subs.length} งาน
                 </div>
-                
+
                 {displaySubs.map((sub, idx) => (
                   <div key={sub.id} style={{ backgroundColor: 'white', padding: '15px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
                     <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px', fontWeight: 'bold' }}>
                       งานที่ {subs.length - subs.indexOf(sub)} - {new Date(sub.submittedAt).toLocaleString('th-TH')}
                     </div>
-                    
+
                     {editingId === sub.id ? (
                       <div style={{ fontSize: '14px' }}>
                         <div style={{ marginBottom: '8px' }}>
@@ -815,7 +863,7 @@ const App = () => {
                         <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', fontSize: '15px' }}>{sub.subjectName}</p>
                         <p style={{ margin: '0 0 5px 0', color: '#666' }}>รหัสวิชา: {sub.subjectCode}</p>
                         <p style={{ margin: '0 0 10px 0', color: '#666' }}>ติด {sub.type} - ปี {sub.year}</p>
-                        
+
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', gap: '8px' }}>
                           <span style={{ padding: '5px 12px', backgroundColor: getStatusColor(sub.status), color: 'white', fontSize: '12px', borderRadius: '4px', fontWeight: 'bold' }}>
                             {sub.status}
@@ -829,21 +877,21 @@ const App = () => {
                             </button>
                           </div>
                         </div>
-                        
+
                         {sub.images && sub.images.length > 0 && (
                           <div style={{ marginTop: '12px' }}>
                             <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '5px' }}>รูปงาน ({sub.images.length} รูป):</div>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px' }}>
                               {sub.images.slice(0, 3).map((img, imgIdx) => (
-                                <div 
+                                <div
                                   key={imgIdx}
                                   style={{ position: 'relative', cursor: 'pointer' }}
                                   onClick={() => setViewImage(img)}
                                 >
-                                  <img 
-                                    src={img} 
-                                    alt={`work ${imgIdx + 1}`} 
-                                    style={{ width: '100%', height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }} 
+                                  <img
+                                    src={img}
+                                    alt={`work ${imgIdx + 1}`}
+                                    style={{ width: '100%', height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }}
                                   />
                                 </div>
                               ))}
@@ -859,7 +907,7 @@ const App = () => {
                     )}
                   </div>
                 ))}
-                
+
                 {subs.length > 1 && (
                   <button onClick={() => toggleCard(studentId)} style={{ width: '100%', padding: '10px', backgroundColor: '#607D8B', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                     {isExpanded ? `ซ่อน (${subs.length - 1} งาน)` : `ดูทั้งหมด (${subs.length} งาน)`}
@@ -876,7 +924,7 @@ const App = () => {
             </p>
           </div>
         )}
-        
+
         {/* Confirm Delete Modal */}
         {confirmDelete && (
           <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
@@ -884,14 +932,14 @@ const App = () => {
               <h3 style={{ marginTop: 0, color: '#f44336' }}>ยืนยันการลบ</h3>
               <p style={{ margin: '15px 0', color: '#666' }}>คุณแน่ใจหรือไม่ที่จะลบงานนี้? การกระทำนี้ไม่สามารถยกเลิกได้</p>
               <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button 
-                  onClick={() => handleDelete(confirmDelete)} 
+                <button
+                  onClick={() => handleDelete(confirmDelete)}
                   style={{ flex: 1, padding: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                   ยืนยันลบ
                 </button>
-                <button 
-                  onClick={() => setConfirmDelete(null)} 
+                <button
+                  onClick={() => setConfirmDelete(null)}
                   style={{ flex: 1, padding: '10px', backgroundColor: '#757575', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                   ยกเลิก
@@ -926,6 +974,7 @@ const App = () => {
         }
         div:hover .zoom-icon {
           opacity: 1 !important;
+          transition: opacity 0.3s;
         }
       `}</style>
       {!currentUser && <LoginPage />}
