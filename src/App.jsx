@@ -12,7 +12,7 @@ const Header = () => (
     left: 0,
     right: 0,
     height: '60px',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(12px)',
     borderBottom: '1px solid rgba(0,0,0,0.05)',
     padding: '0 30px',
@@ -27,7 +27,7 @@ const Header = () => (
         width: '35px',
         height: '35px',
         borderRadius: '10px',
-        background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+        background: 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -180,7 +180,7 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '80px 20px 20px',
-        background: 'linear-gradient(135deg, #f6f8fd 0%, #eef2f8 100%)'
+        background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)'
       }}>
         <div style={{
           width: '100%',
@@ -321,7 +321,7 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
                     type="checkbox"
                     checked={showAdminCode}
                     onChange={(e) => setShowAdminCode(e.target.checked)}
-                    style={{ marginRight: '10px', width: '18px', height: '18px', accentColor: '#2196F3' }}
+                    style={{ marginRight: '10px', width: '18px', height: '18px', accentColor: '#4CAF50' }}
                   />
                   <span style={{ fontSize: '14px', color: '#555', fontWeight: '500' }}>ลงทะเบียนสำหรับ Admin</span>
                 </label>
@@ -332,14 +332,14 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
                       type="password"
                       value={formData.adminCode}
                       onChange={(e) => setFormData({ ...formData, adminCode: e.target.value })}
-                      placeholder="กรอกรหัส Admin"
+                      placeholder="กรอกรหัสลับ Admin"
                       style={{
                         width: '100%',
                         padding: '14px 16px',
-                        border: '2px solid #ff9800',
+                        border: '2px solid #eee',
                         borderRadius: '12px',
                         fontSize: '15px',
-                        backgroundColor: '#fff8e1',
+                        backgroundColor: '#f9f9f9',
                         outline: 'none'
                       }}
                     />
@@ -353,16 +353,15 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
               style={{
                 width: '100%',
                 padding: '16px',
-                background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+                backgroundColor: '#4CAF50',
                 color: 'white',
                 border: 'none',
-                cursor: 'pointer',
-                borderRadius: '14px',
-                fontWeight: '700',
+                borderRadius: '12px',
                 fontSize: '16px',
-                boxShadow: '0 10px 20px rgba(33, 150, 243, 0.3)',
-                transition: 'all 0.3s ease',
-                letterSpacing: '0.5px'
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                boxShadow: '0 10px 20px rgba(76, 175, 80, 0.2)'
               }}
               className="submit-btn"
             >
@@ -383,7 +382,7 @@ const SubmitWorkPage = ({ handleSubmitWork, handleLogout, setPage, showPopup }) 
     subjectCode: '',
     subjectName: '',
     type: 'ศูนย์',
-    gradeYear: '', // Changed from year to gradeYear
+    gradeYear: '',
     date: new Date().toISOString().split('T')[0],
     images: []
   });
@@ -431,7 +430,7 @@ const SubmitWorkPage = ({ handleSubmitWork, handleLogout, setPage, showPopup }) 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2>ส่งงานแก้</h2>
         <div>
-          <button onClick={() => setPage('history')} style={{ marginRight: '10px', padding: '10px 20px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ประวัติ</button>
+          <button onClick={() => setPage('history')} style={{ marginRight: '10px', padding: '10px 20px', backgroundColor: '#66BB6A', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ประวัติ</button>
           <button onClick={handleLogout} style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
             <LogOut size={16} /> ออกจากระบบ
           </button>
@@ -452,7 +451,6 @@ const SubmitWorkPage = ({ handleSubmitWork, handleLogout, setPage, showPopup }) 
             <input type="text" placeholder="เช่น 12345" value={formData.studentId} onChange={(e) => setFormData({ ...formData, studentId: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
           </div>
 
-          {/* Grouped Subject Info and Type */}
           <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัสวิชา: *</label>
@@ -522,23 +520,23 @@ const HistoryPage = ({ userSubmissions, handleLogout, setPage, setViewImage }) =
         }
       });
     }
-
-    return filtered.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    return filtered;
   };
 
   const filteredSubmissions = getFilteredSubmissions();
 
   const getStatusColor = (status) => {
     switch (status) {
+      case 'รอตรวจ': return '#FFC107';
       case 'ตรวจแล้ว': return '#4CAF50';
-      case 'กำลังตรวจ': return '#2196F3';
+      case 'แก้ไข': return '#f44336';
       case 'ถูกลบ': return '#9E9E9E';
-      default: return '#FFC107';
+      default: return '#9E9E9E';
     }
   };
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '20px auto', padding: '20px' }}>
+    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2>ประวัติการส่งงาน ({filteredSubmissions.length} งาน)</h2>
         <div>
@@ -598,6 +596,7 @@ const HistoryPage = ({ userSubmissions, handleLogout, setPage, setViewImage }) =
           ))}
         </div>
       )}
+
       {selectedSubmission && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setSelectedSubmission(null)}>
           <div style={{ backgroundColor: 'white', padding: '30px', maxWidth: '700px', maxHeight: '85vh', overflow: 'auto', borderRadius: '8px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
@@ -660,7 +659,7 @@ const HistoryPage = ({ userSubmissions, handleLogout, setPage, setViewImage }) =
                 </div>
               </div>
             )}
-            <button onClick={() => setSelectedSubmission(null)} style={{ marginTop: '25px', padding: '12px 20px', width: '100%', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>ปิด</button>
+            <button onClick={() => setSelectedSubmission(null)} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#666', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>ปิด</button>
           </div>
         </div>
       )}
@@ -680,14 +679,14 @@ const AdminPage = ({ submissions, handleLogout, updateSubmission, deleteSubmissi
 
   const getFilteredSubmissions = () => {
     const filtered = submissions.filter(sub => {
-      // กรองตาม Tab
+      // Filter by Tab
       if (activeTab === 'active' && sub.isDeleted) return false;
       if (activeTab === 'trash' && !sub.isDeleted) return false;
 
-      // กรองตาม Search
+      // Filter by Search
       if (!localSearchTerm) return true;
       if (localSearchType === 'name') {
-        return sub.userName.toLowerCase().includes(localSearchTerm.toLowerCase());
+        return sub.studentName.toLowerCase().includes(localSearchTerm.toLowerCase());
       } else {
         return sub.studentId.includes(localSearchTerm);
       }
@@ -744,14 +743,15 @@ const AdminPage = ({ submissions, handleLogout, updateSubmission, deleteSubmissi
 
   const getStatusColor = (status) => {
     switch (status) {
+      case 'รอตรวจ': return '#FFC107';
       case 'ตรวจแล้ว': return '#4CAF50';
-      case 'กำลังตรวจ': return '#2196F3';
-      default: return '#FFC107';
+      case 'แก้ไข': return '#f44336';
+      default: return '#9E9E9E';
     }
   };
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '20px auto', padding: '20px' }}>
+    <div style={{ maxWidth: '1200px', margin: '20px auto', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h2 style={{ margin: 0 }}>Admin Panel</h2>
@@ -829,69 +829,40 @@ const AdminPage = ({ submissions, handleLogout, updateSubmission, deleteSubmissi
 
           return (
             <div key={studentId} style={{ border: '2px solid #ddd', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-              <div style={{ marginBottom: '15px' }}>
-                <h3 style={{ margin: '0 0 8px 0' }}>{subs[0].studentName}</h3>
-                <p style={{ color: '#666', margin: '0' }}>รหัส: {studentId} | ชั้น: {subs[0].grade}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', paddingBottom: '10px', borderBottom: '1px solid #ddd' }}>
+                <div>
+                  <h3 style={{ margin: 0 }}>{subs[0].studentName}</h3>
+                  <p style={{ margin: '5px 0', color: '#666' }}>รหัส: {studentId} | ชั้น: {subs[0].grade}</p>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '18px', color: '#4CAF50' }}>{subs.length}</span>
+                  <span style={{ fontSize: '12px', color: '#666' }}> งาน</span>
+                </div>
               </div>
 
-              <div style={{ backgroundColor: '#2196F3', color: 'white', padding: '10px', marginBottom: '10px', borderRadius: '4px', fontWeight: 'bold', textAlign: 'center' }}>
-                งานทั้งหมด: {subs.length} งาน
-              </div>
-
-              {displaySubs.map((sub, idx) => (
-                <div key={sub.id} style={{ backgroundColor: 'white', padding: '15px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
-                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px', fontWeight: 'bold' }}>
-                    งานที่ {subs.length - subs.indexOf(sub)} - {new Date(sub.submittedAt).toLocaleString('th-TH')}
-                  </div>
-
-                  {editingId === sub.id ? (
-                    <div style={{ fontSize: '14px' }}>
-                      <div style={{ marginBottom: '8px' }}>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '3px' }}>ชื่อวิชา:</label>
-                        <input type="text" value={editData.subjectName} onChange={(e) => setEditData({ ...editData, subjectName: e.target.value })} style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }} />
+              <div style={{ display: 'grid', gap: '15px' }}>
+                {displaySubs.map(sub => (
+                  <div key={sub.id} style={{ backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '10px' }}>
+                      <div>
+                        <h4 style={{ margin: '0 0 5px 0' }}>{sub.subjectName} ({sub.subjectCode})</h4>
+                        <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+                          ติด {sub.type} | {sub.gradeYear}
+                          <br />
+                          ส่ง: {new Date(sub.submittedAt).toLocaleDateString('th-TH')}
+                        </p>
                       </div>
-                      <div style={{ marginBottom: '8px' }}>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '3px' }}>รหัสวิชา:</label>
-                        <input type="text" value={editData.subjectCode} onChange={(e) => setEditData({ ...editData, subjectCode: e.target.value })} style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }} />
-                      </div>
-                      <div style={{ marginBottom: '10px' }}>
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '3px' }}>สถานะ:</label>
-                        <select value={editData.status} onChange={(e) => setEditData({ ...editData, status: e.target.value })} style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}>
-                          <option value="ยังไม่ตรวจ">ยังไม่ตรวจ</option>
-                          <option value="กำลังตรวจ">กำลังตรวจ</option>
-                          <option value="ตรวจแล้ว">ตรวจแล้ว</option>
-                        </select>
-                      </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button onClick={handleSaveEdit} style={{ flex: 1, padding: '8px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-                          <Check size={16} /> บันทึก
-                        </button>
-                        <button onClick={() => setEditingId(null)} style={{ flex: 1, padding: '8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-                          <X size={16} /> ยกเลิก
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ fontSize: '14px' }}>
-                      <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', fontSize: '15px' }}>{sub.subjectName}</p>
-                      <p style={{ margin: '0 0 5px 0', color: '#666' }}>รหัสวิชา: {sub.subjectCode}</p>
-                      <p style={{ margin: '0 0 10px 0', color: '#666' }}>ติด {sub.type} - {sub.gradeYear || sub.year}</p>
-
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', gap: '8px' }}>
-                        <span style={{ padding: '5px 12px', backgroundColor: getStatusColor(sub.status), color: 'white', fontSize: '12px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          {sub.status}
-                        </span>
+                      {editingId === sub.id ? (
                         <div style={{ display: 'flex', gap: '5px' }}>
-                          {activeTab === 'active' ? (
-                            <>
-                              <button onClick={() => handleEdit(sub)} style={{ padding: '6px 12px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <Edit2 size={14} /> แก้ไข
-                              </button>
-                              <button onClick={() => setConfirmDelete(sub.id)} style={{ padding: '6px 12px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <Trash2 size={14} /> ลบ
-                              </button>
-                            </>
-                          ) : (
+                          <button onClick={handleSaveEdit} style={{ padding: '5px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Check size={16} /></button>
+                          <button onClick={() => setEditingId(null)} style={{ padding: '5px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><X size={16} /></button>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                          {!sub.isDeleted && (
+                            <button onClick={() => handleEdit(sub)} style={{ padding: '5px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Edit2 size={16} /></button>
+                          )}
+                          {sub.isDeleted ? (
                             <>
                               <button onClick={() => handleRestore(sub.id)} style={{ padding: '6px 12px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <RotateCcw size={14} /> กู้คืน
@@ -900,101 +871,110 @@ const AdminPage = ({ submissions, handleLogout, updateSubmission, deleteSubmissi
                                 <Trash size={14} /> ลบถาวร
                               </button>
                             </>
-                          )}
-                        </div>
-                      </div>
-
-                      {sub.images && sub.images.length > 0 && (
-                        <div style={{ marginTop: '12px' }}>
-                          <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '5px' }}>รูปงาน ({sub.images.length} รูป):</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px' }}>
-                            {sub.images.slice(0, 3).map((img, imgIdx) => (
-                              <div
-                                key={imgIdx}
-                                style={{ position: 'relative', cursor: 'pointer' }}
-                                onClick={() => setViewImage(img)}
-                              >
-                                <img
-                                  src={img}
-                                  alt={`work ${imgIdx + 1}`}
-                                  style={{ width: '100%', height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          {sub.images.length > 3 && (
-                            <div style={{ fontSize: '11px', color: '#666', marginTop: '5px', textAlign: 'center' }}>
-                              และอีก {sub.images.length - 3} รูป
-                            </div>
+                          ) : (
+                            <button onClick={() => setConfirmDelete(sub.id)} style={{ padding: '5px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
                           )}
                         </div>
                       )}
                     </div>
-                  )}
-                </div>
-              ))}
+
+                    {editingId === sub.id ? (
+                      <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                        <div style={{ marginBottom: '10px' }}>
+                          <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>สถานะ:</label>
+                          <select
+                            value={editData.status}
+                            onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                            style={{ width: '100%', padding: '5px', borderRadius: '4px', border: '1px solid #ddd' }}
+                          >
+                            <option value="รอตรวจ">รอตรวจ</option>
+                            <option value="ตรวจแล้ว">ตรวจแล้ว</option>
+                            <option value="แก้ไข">แก้ไข</option>
+                          </select>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'inline-block', padding: '4px 10px', backgroundColor: getStatusColor(sub.status), color: 'white', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>
+                        {sub.status}
+                      </div>
+                    )}
+
+                    {sub.images && sub.images.length > 0 && (
+                      <div style={{ marginTop: '12px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '5px' }}>รูปงาน ({sub.images.length} รูป):</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '5px' }}>
+                          {sub.images.slice(0, 3).map((img, imgIdx) => (
+                            <div
+                              key={imgIdx}
+                              style={{ position: 'relative', cursor: 'pointer' }}
+                              onClick={() => setViewImage(img)}
+                            >
+                              <img
+                                src={img}
+                                alt={`work ${imgIdx + 1}`}
+                                style={{ width: '100%', height: '70px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        {sub.images.length > 3 && (
+                          <div style={{ fontSize: '11px', color: '#666', marginTop: '5px', textAlign: 'center' }}>
+                            และอีก {sub.images.length - 3} รูป
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
 
               {subs.length > 1 && (
-                <button onClick={() => toggleCard(studentId)} style={{ width: '100%', padding: '10px', backgroundColor: '#607D8B', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  {isExpanded ? `ซ่อน (${subs.length - 1} งาน)` : `ดูทั้งหมด (${subs.length} งาน)`}
+                <button
+                  onClick={() => toggleCard(studentId)}
+                  style={{
+                    width: '100%',
+                    marginTop: '15px',
+                    padding: '8px',
+                    backgroundColor: 'white',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    color: '#666',
+                    fontSize: '13px'
+                  }}
+                >
+                  {isExpanded ? 'ย่อรายการ' : `ดูทั้งหมด (${subs.length})`}
                 </button>
               )}
             </div>
           );
         })}
       </div>
-      {Object.keys(groupedSubmissions).length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid #ddd' }}>
-          <p style={{ fontSize: '18px', color: '#666', margin: 0 }}>
-            {localSearchTerm ? 'ไม่พบข้อมูลที่ค้นหา' : 'ยังไม่มีงานที่ส่งมา'}
-          </p>
-        </div>
-      )}
 
-      {/* Confirm Delete Modal */}
+      {/* Confirmation Modals */}
       {confirmDelete && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', maxWidth: '400px', width: '90%' }}>
-            <h3 style={{ marginTop: 0, color: '#f44336' }}>⚠️ ย้ายไปถังขยะ</h3>
-            <p style={{ margin: '15px 0', color: '#666' }}>คุณต้องการย้ายงานนี้ไปถังขยะหรือไม่? คุณสามารถกู้คืนได้ภายหลัง</p>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-              <button
-                onClick={() => handleDelete(confirmDelete)}
-                style={{ flex: 1, padding: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ย้ายไปถังขยะ
-              </button>
-              <button
-                onClick={() => setConfirmDelete(null)}
-                style={{ flex: 1, padding: '10px', backgroundColor: '#757575', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ยกเลิก
-              </button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'white', padding: '25px', borderRadius: '8px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>
+            <AlertCircle size={48} color="#f44336" style={{ marginBottom: '15px' }} />
+            <h3 style={{ margin: '0 0 10px 0' }}>ยืนยันการลบ?</h3>
+            <p style={{ color: '#666', marginBottom: '20px' }}>รายการนี้จะถูกย้ายไปที่ถังขยะ</p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button onClick={() => setConfirmDelete(null)} style={{ padding: '10px 20px', border: '1px solid #ddd', backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer' }}>ยกเลิก</button>
+              <button onClick={() => handleDelete(confirmDelete)} style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ลบรายการ</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Confirm Permanent Delete Modal */}
       {confirmPermanentDelete && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', maxWidth: '400px', width: '90%', border: '3px solid #d32f2f' }}>
-            <h3 style={{ marginTop: 0, color: '#d32f2f' }}>🚨 ลบถาวร</h3>
-            <p style={{ margin: '15px 0', color: '#666', fontWeight: 'bold' }}>คำเตือน! การลบถาวรจะไม่สามารถกู้คืนได้อีก</p>
-            <p style={{ margin: '10px 0', color: '#666' }}>คุณแน่ใจหรือไม่ที่จะลบงานนี้ออกจากระบบอย่างถาวร?</p>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-              <button
-                onClick={() => handlePermanentDelete(confirmPermanentDelete)}
-                style={{ flex: 1, padding: '10px', backgroundColor: '#d32f2f', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ลบถาวร
-              </button>
-              <button
-                onClick={() => setConfirmPermanentDelete(null)}
-                style={{ flex: 1, padding: '10px', backgroundColor: '#757575', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                ยกเลิก
-              </button>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'white', padding: '25px', borderRadius: '8px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>
+            <AlertCircle size={48} color="#d32f2f" style={{ marginBottom: '15px' }} />
+            <h3 style={{ margin: '0 0 10px 0' }}>ยืนยันการลบถาวร?</h3>
+            <p style={{ color: '#666', marginBottom: '20px' }}>รายการนี้จะถูกลบออกจากระบบอย่างถาวรและไม่สามารถกู้คืนได้</p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button onClick={() => setConfirmPermanentDelete(null)} style={{ padding: '10px 20px', border: '1px solid #ddd', backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer' }}>ยกเลิก</button>
+              <button onClick={() => handlePermanentDelete(confirmPermanentDelete)} style={{ padding: '10px 20px', backgroundColor: '#d32f2f', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ลบถาวร</button>
             </div>
           </div>
         </div>
@@ -1003,279 +983,158 @@ const AdminPage = ({ submissions, handleLogout, updateSubmission, deleteSubmissi
   );
 };
 
+// Main App Component
 const App = () => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [page, setPage] = useState('login');
-  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState(null);
+  const [page, setPage] = useState('login'); // login, submit, history, admin
   const [submissions, setSubmissions] = useState([]);
-  const [popup, setPopup] = useState({ show: false, message: '', type: 'success' });
   const [viewImage, setViewImage] = useState(null);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [popup, setPopup] = useState({ show: false, message: '', type: 'success' });
 
-  // Popup Function
-  const showPopup = (message, type = 'success') => {
-    setPopup({ show: true, message, type });
-    setTimeout(() => {
-      setPopup(prev => ({ ...prev, show: false }));
-    }, 3000);
-  };
-
-  // Load data on mount
+  // Load data from localStorage on mount
   useEffect(() => {
-    loadData();
+    const savedUser = localStorage.getItem('regradeUser');
+    const savedSubmissions = localStorage.getItem('regradeSubmissions');
+
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      setPage(parsedUser.isAdmin ? 'admin' : 'submit');
+    }
+
+    if (savedSubmissions) {
+      setSubmissions(JSON.parse(savedSubmissions));
+    }
   }, []);
 
-  const loadData = () => {
-    try {
-      const usersData = localStorage.getItem('users');
-      const submissionsData = localStorage.getItem('submissions');
-
-      if (usersData) setUsers(JSON.parse(usersData));
-      if (submissionsData) setSubmissions(JSON.parse(submissionsData));
-    } catch (error) {
-      console.log('No data found, starting fresh');
-    }
+  const showPopup = (message, type = 'success') => {
+    setPopup({ show: true, message, type });
+    setTimeout(() => setPopup({ ...popup, show: false }), 3000);
   };
 
-  const saveUsers = (newUsers) => {
-    localStorage.setItem('users', JSON.stringify(newUsers));
-    setUsers(newUsers);
-  };
-
-  const saveSubmissions = (newSubmissions) => {
-    localStorage.setItem('submissions', JSON.stringify(newSubmissions));
-    setSubmissions(newSubmissions);
-  };
-
-  // Auth Functions
-  const handleRegister = (email, password, name, adminCode = '') => {
-    if (!email.endsWith('@taweethapisek.ac.th')) {
-      showPopup('กรุณาใช้ Email โรงเรียน (@taweethapisek.ac.th)', 'error');
+  const handleLogin = (email, password) => {
+    // Admin Login
+    if (email === 'admin@taweethapisek.ac.th' && password === 'admin1234') {
+      const adminUser = { name: 'Admin', email, isAdmin: true };
+      setUser(adminUser);
+      localStorage.setItem('regradeUser', JSON.stringify(adminUser));
+      setPage('admin');
+      showPopup('เข้าสู่ระบบผู้ดูแลระบบสำเร็จ');
       return;
     }
 
-    const isAdmin = adminCode === ADMIN_SECRET_CODE;
+    // User Login (Simulation)
+    const mockUser = { name: 'นักเรียน ทดสอบ', email, isAdmin: false };
+    setUser(mockUser);
+    localStorage.setItem('regradeUser', JSON.stringify(mockUser));
+    setPage('submit');
+    showPopup('เข้าสู่ระบบสำเร็จ');
+  };
 
-    if (adminCode && !isAdmin) {
+  const handleRegister = (email, password, name, adminCode) => {
+    if (adminCode && adminCode !== ADMIN_SECRET_CODE) {
       showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
       return;
     }
 
-    if (users.find(u => u.email === email)) {
-      showPopup('Email นี้ถูกใช้งานแล้ว', 'error');
-      return;
-    }
-
     const newUser = {
-      id: Date.now().toString(),
-      email,
-      password,
       name,
-      isAdmin
+      email,
+      isAdmin: !!adminCode
     };
 
-    const updatedUsers = [...users, newUser];
-    saveUsers(updatedUsers);
-    showPopup(isAdmin ? 'สมัครสมาชิก Admin สำเร็จ!' : 'สมัครสมาชิกสำเร็จ!', 'success');
+    setUser(newUser);
+    localStorage.setItem('regradeUser', JSON.stringify(newUser));
+    setPage(newUser.isAdmin ? 'admin' : 'submit');
+    showPopup('ลงทะเบียนสำเร็จ');
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('regradeUser');
     setPage('login');
+    showPopup('ออกจากระบบแล้ว');
   };
 
-  const handleLogin = (email, password) => {
-    const user = users.find(u => u.email === email && u.password === password);
-    if (user) {
-      setCurrentUser(user);
-      setPage(user.isAdmin ? 'admin' : 'submit');
-    } else {
-      showPopup('Email หรือ Password ไม่ถูกต้อง', 'error');
-    }
-  };
-
-  const handleLogoutClick = () => {
-    setShowLogoutConfirm(true);
-  };
-
-  const confirmLogout = () => {
-    setCurrentUser(null);
-    setPage('login');
-    setShowLogoutConfirm(false);
-  };
-
-  // Submit Work
-  const handleSubmitWork = (workData) => {
+  const handleSubmitWork = (data) => {
     const newSubmission = {
-      id: Date.now().toString(),
-      userId: currentUser.id,
-      userName: workData.studentName,
-      studentId: workData.studentId,
-      ...workData,
+      id: Date.now(),
+      ...data,
+      status: 'รอตรวจ',
       submittedAt: new Date().toISOString(),
-      status: 'ยังไม่ตรวจ'
+      isDeleted: false
     };
 
-    const updatedSubmissions = [...submissions, newSubmission];
-    saveSubmissions(updatedSubmissions);
-    showPopup('ส่งงานสำเร็จ!', 'success');
+    const updatedSubmissions = [newSubmission, ...submissions];
+    setSubmissions(updatedSubmissions);
+    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
+    showPopup('ส่งงานเรียบร้อยแล้ว');
     setPage('history');
   };
 
-  // Admin Functions
-  const updateSubmission = (submissionId, updatedData) => {
+  const updateSubmission = (id, updates) => {
     const updatedSubmissions = submissions.map(sub => {
-      if (sub.id === submissionId) {
-        const updated = { ...sub, ...updatedData };
-        // ถ้าเปลี่ยนเป็น "ตรวจแล้ว" ให้บันทึกวันที่
-        if (updatedData.status === 'ตรวจแล้ว' && !sub.completedAt) {
+      if (sub.id === id) {
+        const updated = { ...sub, ...updates };
+        if (updates.status === 'ตรวจแล้ว' && sub.status !== 'ตรวจแล้ว') {
           updated.completedAt = new Date().toISOString();
         }
         return updated;
       }
       return sub;
     });
-    saveSubmissions(updatedSubmissions);
-    showPopup('บันทึกข้อมูลสำเร็จ', 'success');
+    setSubmissions(updatedSubmissions);
+    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
+    showPopup('อัปเดตสถานะเรียบร้อย');
   };
 
-  const deleteSubmission = (submissionId) => {
+  const deleteSubmission = (id) => {
     const updatedSubmissions = submissions.map(sub =>
-      sub.id === submissionId ? { ...sub, isDeleted: true, deletedAt: new Date().toISOString() } : sub
+      sub.id === id ? { ...sub, isDeleted: true, deletedAt: new Date().toISOString() } : sub
     );
-    saveSubmissions(updatedSubmissions);
-    showPopup('ย้ายงานไปถังขยะแล้ว', 'success');
+    setSubmissions(updatedSubmissions);
+    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
+    showPopup('ย้ายไปถังขยะแล้ว');
   };
 
-  const restoreSubmission = (submissionId) => {
-    const updatedSubmissions = submissions.map(sub => {
-      if (sub.id === submissionId) {
-        const { isDeleted, deletedAt, ...rest } = sub;
-        return rest;
-      }
-      return sub;
-    });
-    saveSubmissions(updatedSubmissions);
-    showPopup('กู้คืนงานสำเร็จ', 'success');
+  const restoreSubmission = (id) => {
+    const updatedSubmissions = submissions.map(sub =>
+      sub.id === id ? { ...sub, isDeleted: false, deletedAt: null } : sub
+    );
+    setSubmissions(updatedSubmissions);
+    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
+    showPopup('กู้คืนรายการแล้ว');
   };
 
-  const permanentDeleteSubmission = (submissionId) => {
-    const updatedSubmissions = submissions.filter(sub => sub.id !== submissionId);
-    saveSubmissions(updatedSubmissions);
-    showPopup('ลบงานถาวรสำเร็จ', 'success');
-  };
-
-  const getUserSubmissions = () => {
-    return submissions.filter(sub => sub.userId === currentUser.id);
+  const permanentDeleteSubmission = (id) => {
+    const updatedSubmissions = submissions.filter(sub => sub.id !== id);
+    setSubmissions(updatedSubmissions);
+    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
+    showPopup('ลบรายการถาวรแล้ว');
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+    <div style={{ fontFamily: "'Sarabun', sans-serif", backgroundColor: '#f5f5f5', minHeight: '100vh', paddingBottom: '50px' }}>
+      <Header />
+      <div style={{ paddingTop: '80px' }}>
+        {page === 'login' && <LoginPage handleLogin={handleLogin} handleRegister={handleRegister} />}
+        {page === 'submit' && <SubmitWorkPage handleSubmitWork={handleSubmitWork} handleLogout={handleLogout} setPage={setPage} showPopup={showPopup} />}
+        {page === 'history' && <HistoryPage userSubmissions={submissions.filter(s => !s.isDeleted)} handleLogout={handleLogout} setPage={setPage} setViewImage={setViewImage} />}
+        {page === 'admin' && (
+          <AdminPage
+            submissions={submissions}
+            handleLogout={handleLogout}
+            updateSubmission={updateSubmission}
+            deleteSubmission={deleteSubmission}
+            restoreSubmission={restoreSubmission}
+            permanentDeleteSubmission={permanentDeleteSubmission}
+            setViewImage={setViewImage}
+          />
+        )}
+      </div>
+
       <ImageViewer viewImage={viewImage} onClose={() => setViewImage(null)} />
-      <PopupNotification popup={popup} onClose={() => setPopup(prev => ({ ...prev, show: false }))} />
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
-        
-        * {
-          font-family: 'Prompt', sans-serif;
-        }
-
-        @keyframes slideIn {
-          from { transform: translateX(400px); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .input-field:focus {
-          border-color: #2196F3 !important;
-          box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1) !important;
-        }
-        
-        .submit-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 15px 30px rgba(33, 150, 243, 0.4) !important;
-        }
-        .submit-btn:active {
-          transform: translateY(0);
-        }
-
-        .checkbox-label:hover {
-          background-color: #f5f5f5;
-        }
-
-        .zoom-icon {
-          opacity: 0 !important;
-          transition: opacity 0.3s;
-        }
-        div:hover .zoom-icon {
-          opacity: 1 !important;
-          transition: opacity 0.3s;
-        }
-      `}</style>
-
-      {!currentUser && (
-        <LoginPage
-          handleLogin={handleLogin}
-          handleRegister={handleRegister}
-        />
-      )}
-
-      {currentUser && !currentUser.isAdmin && page === 'submit' && (
-        <SubmitWorkPage
-          handleSubmitWork={handleSubmitWork}
-          handleLogout={handleLogoutClick}
-          setPage={setPage}
-          showPopup={showPopup}
-        />
-      )}
-
-      {currentUser && !currentUser.isAdmin && page === 'history' && (
-        <HistoryPage
-          userSubmissions={getUserSubmissions()}
-          handleLogout={handleLogoutClick}
-          setPage={setPage}
-          setViewImage={setViewImage}
-        />
-      )}
-
-      {currentUser && currentUser.isAdmin && (
-        <AdminPage
-          submissions={submissions}
-          handleLogout={handleLogoutClick}
-          updateSubmission={updateSubmission}
-          deleteSubmission={deleteSubmission}
-          restoreSubmission={restoreSubmission}
-          permanentDeleteSubmission={permanentDeleteSubmission}
-          setViewImage={setViewImage}
-        />
-      )}
-
-      {/* Logout Confirmation Modal */}
-      {showLogoutConfirm && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 }}>
-          <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '8px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>
-            <h3 style={{ marginTop: 0, color: '#333' }}>ยืนยันการออกจากระบบ</h3>
-            <p style={{ margin: '20px 0', color: '#666' }}>คุณต้องการออกจากระบบใช่หรือไม่?</p>
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-              <button
-                onClick={confirmLogout}
-                style={{ padding: '10px 25px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
-              >
-                ออกจากระบบ
-              </button>
-              <button
-                onClick={() => setShowLogoutConfirm(false)}
-                style={{ padding: '10px 25px', backgroundColor: '#e0e0e0', color: '#333', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
-              >
-                ยกเลิก
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PopupNotification popup={popup} onClose={() => setPopup({ ...popup, show: false })} />
     </div>
   );
 };
