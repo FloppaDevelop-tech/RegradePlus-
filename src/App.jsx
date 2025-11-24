@@ -4,6 +4,57 @@ import { Search, LogOut, Upload, Eye, Edit2, Check, X, AlertCircle, CheckCircle,
 // Admin Secret Code
 const ADMIN_SECRET_CODE = 'ADMIN2025';
 
+// Header Component
+const Header = () => (
+  <div style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '60px',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backdropFilter: 'blur(12px)',
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
+    padding: '0 30px',
+    zIndex: 1000,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+      <div style={{
+        width: '35px',
+        height: '35px',
+        borderRadius: '10px',
+        background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '20px'
+      }}>R+</div>
+      <div>
+        <h1 style={{
+          margin: 0,
+          fontSize: '20px',
+          fontWeight: '800',
+          color: '#333',
+          letterSpacing: '-0.5px'
+        }}>RegradePlus+</h1>
+        <span style={{
+          fontSize: '12px',
+          color: '#666',
+          fontWeight: '500',
+          display: 'block',
+          marginTop: '-2px'
+        }}>กลุ่มสาระการเรียนรู้วิทยาศาสตร์ & เทคโนโลยี</span>
+      </div>
+    </div>
+  </div>
+);
+
 // Components defined outside App to prevent re-renders/state resets
 const ImageViewer = ({ viewImage, onClose }) => {
   if (!viewImage) return null;
@@ -121,89 +172,206 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
   };
 
   return (
-    <div style={{ maxWidth: '450px', margin: '50px auto', padding: '30px', border: '1px solid #ddd', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ color: '#2196F3', margin: '0 0 10px 0' }}>RegradePlus+</h1>
-        <p style={{ color: '#666', margin: 0 }}>กลุ่มสาระการเรียนรู้วิทยาศาสตร์ & เทคโนโลยี</p>
-      </div>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{isRegister ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}</h2>
-      <form onSubmit={handleSubmit}>
-        {isRegister && (
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ชื่อ-นามสกุล:</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-              style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-            />
+    <>
+      <Header />
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '80px 20px 20px',
+        background: 'linear-gradient(135deg, #f6f8fd 0%, #eef2f8 100%)'
+      }}>
+        <div style={{
+          width: '100%',
+          maxWidth: '400px',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '24px',
+          padding: '40px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+          border: '1px solid rgba(255,255,255,0.8)'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <h2 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '800', color: '#1a1a1a' }}>
+              {isRegister ? 'สร้างบัญชีใหม่' : 'ยินดีต้อนรับกลับ'}
+            </h2>
+            <p style={{ margin: 0, color: '#666', fontSize: '15px' }}>
+              {isRegister ? 'กรอกข้อมูลเพื่อเริ่มต้นใช้งาน' : 'เข้าสู่ระบบเพื่อจัดการงานแก้ของคุณ'}
+            </p>
           </div>
-        )}
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Email:</label>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            placeholder="yourname@taweethapisek.ac.th"
-            required
-            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Password:</label>
-          <input
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required
-            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-        </div>
 
-        {isRegister && (
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'flex', alignItems: 'center' }}>
-              <input
-                type="checkbox"
-                checked={showAdminCode}
-                onChange={(e) => setShowAdminCode(e.target.checked)}
-                style={{ marginRight: '8px' }}
-              />
-              ฉันเป็น Admin (ต้องมีรหัส Admin)
-            </label>
+          {/* Custom Tabs */}
+          <div style={{
+            display: 'flex',
+            marginBottom: '30px',
+            backgroundColor: '#f0f2f5',
+            padding: '4px',
+            borderRadius: '14px'
+          }}>
+            <button
+              onClick={() => setIsRegister(false)}
+              style={{
+                flex: 1,
+                padding: '12px',
+                border: 'none',
+                borderRadius: '12px',
+                backgroundColor: !isRegister ? 'white' : 'transparent',
+                color: !isRegister ? '#1a1a1a' : '#666',
+                boxShadow: !isRegister ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                fontSize: '15px'
+              }}
+            >
+              เข้าสู่ระบบ
+            </button>
+            <button
+              onClick={() => setIsRegister(true)}
+              style={{
+                flex: 1,
+                padding: '12px',
+                border: 'none',
+                borderRadius: '12px',
+                backgroundColor: isRegister ? 'white' : 'transparent',
+                color: isRegister ? '#1a1a1a' : '#666',
+                boxShadow: isRegister ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                fontSize: '15px'
+              }}
+            >
+              สมัครสมาชิก
+            </button>
+          </div>
 
-            {showAdminCode && (
-              <div style={{ marginTop: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัส Admin:</label>
+          <form onSubmit={handleSubmit}>
+            {isRegister && (
+              <div style={{ marginBottom: '20px', animation: 'fadeIn 0.3s ease-out' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>ชื่อ-นามสกุล</label>
                 <input
-                  type="password"
-                  value={formData.adminCode}
-                  onChange={(e) => setFormData({ ...formData, adminCode: e.target.value })}
-                  placeholder="กรุณาใส่รหัส Admin"
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  placeholder="กรอกชื่อ-นามสกุล"
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    border: '2px solid #eee',
+                    borderRadius: '12px',
+                    fontSize: '15px',
+                    transition: 'all 0.2s',
+                    backgroundColor: '#f9f9f9',
+                    outline: 'none'
+                  }}
+                  className="input-field"
                 />
               </div>
             )}
-          </div>
-        )}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>อีเมลโรงเรียน</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="name@taweethapisek.ac.th"
+                required
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  border: '2px solid #eee',
+                  borderRadius: '12px',
+                  fontSize: '15px',
+                  transition: 'all 0.2s',
+                  backgroundColor: '#f9f9f9',
+                  outline: 'none'
+                }}
+                className="input-field"
+              />
+            </div>
+            <div style={{ marginBottom: '25px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>รหัสผ่าน</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+                placeholder="••••••••"
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  border: '2px solid #eee',
+                  borderRadius: '12px',
+                  fontSize: '15px',
+                  transition: 'all 0.2s',
+                  backgroundColor: '#f9f9f9',
+                  outline: 'none'
+                }}
+                className="input-field"
+              />
+            </div>
 
-        <button type="submit" style={{ width: '100%', padding: '12px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', fontSize: '16px' }}>
-          {isRegister ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
-        </button>
-      </form>
-      <p style={{ textAlign: 'center', marginTop: '20px' }}>
-        {isRegister ? 'มีบัญชีแล้ว?' : 'ยังไม่มีบัญชี?'}
-        <button onClick={() => {
-          setIsRegister(!isRegister);
-          setFormData({ email: '', password: '', name: '', adminCode: '' });
-          setShowAdminCode(false);
-        }} style={{ marginLeft: '5px', background: 'none', border: 'none', color: '#2196F3', cursor: 'pointer', textDecoration: 'underline', fontSize: '14px' }}>
-          {isRegister ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}
-        </button>
-      </p>
-    </div>
+            {isRegister && (
+              <div style={{ marginBottom: '25px', animation: 'fadeIn 0.3s ease-out' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '10px', borderRadius: '8px', transition: 'background 0.2s' }} className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={showAdminCode}
+                    onChange={(e) => setShowAdminCode(e.target.checked)}
+                    style={{ marginRight: '10px', width: '18px', height: '18px', accentColor: '#2196F3' }}
+                  />
+                  <span style={{ fontSize: '14px', color: '#555', fontWeight: '500' }}>ลงทะเบียนสำหรับ Admin</span>
+                </label>
+
+                {showAdminCode && (
+                  <div style={{ marginTop: '15px', animation: 'slideDown 0.3s ease-out' }}>
+                    <input
+                      type="password"
+                      value={formData.adminCode}
+                      onChange={(e) => setFormData({ ...formData, adminCode: e.target.value })}
+                      placeholder="กรอกรหัส Admin"
+                      style={{
+                        width: '100%',
+                        padding: '14px 16px',
+                        border: '2px solid #ff9800',
+                        borderRadius: '12px',
+                        fontSize: '15px',
+                        backgroundColor: '#fff8e1',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+                borderRadius: '14px',
+                fontWeight: '700',
+                fontSize: '16px',
+                boxShadow: '0 10px 20px rgba(33, 150, 243, 0.3)',
+                transition: 'all 0.3s ease',
+                letterSpacing: '0.5px'
+              }}
+              className="submit-btn"
+            >
+              {isRegister ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -1002,16 +1170,42 @@ const App = () => {
       <ImageViewer viewImage={viewImage} onClose={() => setViewImage(null)} />
       <PopupNotification popup={popup} onClose={() => setPopup(prev => ({ ...prev, show: false }))} />
       <style>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(400px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+        
+        * {
+          font-family: 'Prompt', sans-serif;
         }
+
+        @keyframes slideIn {
+          from { transform: translateX(400px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-field:focus {
+          border-color: #2196F3 !important;
+          box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1) !important;
+        }
+        
+        .submit-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 15px 30px rgba(33, 150, 243, 0.4) !important;
+        }
+        .submit-btn:active {
+          transform: translateY(0);
+        }
+
+        .checkbox-label:hover {
+          background-color: #f5f5f5;
+        }
+
         .zoom-icon {
           opacity: 0 !important;
           transition: opacity 0.3s;
