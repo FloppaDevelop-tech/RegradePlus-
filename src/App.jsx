@@ -130,12 +130,14 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
       <div style={{
         backgroundColor: '#4CAF50',
         color: 'white',
-        padding: '20px',
+        padding: '15px 20px',
         textAlign: 'center',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+        position: 'relative',
+        zIndex: 10
       }}>
-        <h1 style={{ margin: 0, fontSize: '24px' }}>ระบบส่งงานแก้ Regrade Plus</h1>
-        <p style={{ margin: '5px 0 0 0', opacity: 0.9 }}>โรงเรียนทวีธาภิเศก</p>
+        <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.1)' }}>RegradePlus</h1>
+        <p style={{ margin: '4px 0 0 0', fontSize: '14px', opacity: 0.95, fontWeight: '300' }}>กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี</p>
       </div>
 
       {/* Centered Login Box */}
@@ -252,50 +254,6 @@ const LoginPage = ({ handleLogin, handleRegister }) => {
   );
 };
 
-const CLASSES = [
-  "ม.1/1", "ม.1/2", "ม.1/3", "ม.1/4", "ม.1/5", "ม.1/6", "ม.1/7", "ม.1/8", "ม.1/9", "ม.1/10",
-  "ม.2/1", "ม.2/2", "ม.2/3", "ม.2/4", "ม.2/5", "ม.2/6", "ม.2/7", "ม.2/8", "ม.2/9", "ม.2/10",
-  "ม.3/1", "ม.3/2", "ม.3/3", "ม.3/4", "ม.3/5", "ม.3/6", "ม.3/7", "ม.3/8", "ม.3/9", "ม.3/10",
-  "ม.4/1", "ม.4/2", "ม.4/3", "ม.4/4", "ม.4/5", "ม.4/6", "ม.4/7", "ม.4/8", "ม.4/9", "ม.4/10",
-  "ม.5/1", "ม.5/2", "ม.5/3", "ม.5/4", "ม.5/5", "ม.5/6", "ม.5/7", "ม.5/8", "ม.5/9", "ม.5/10",
-  "ม.6/1", "ม.6/2", "ม.6/3", "ม.6/4", "ม.6/5", "ม.6/6", "ม.6/7", "ม.6/8", "ม.6/9", "ม.6/10"
-];
-
-const SUBJECTS = [
-  { code: "ท21101", name: "ภาษาไทย 1" },
-  { code: "ค21101", name: "คณิตศาสตร์ 1" },
-  { code: "ว21101", name: "วิทยาศาสตร์ 1" },
-  { code: "ส21101", name: "สังคมศึกษา 1" },
-  { code: "พ21101", name: "สุขศึกษา 1" },
-  { code: "ศ21101", name: "ศิลปะ 1" },
-  { code: "ง21101", name: "การงานอาชีพ 1" },
-  { code: "อ21101", name: "ภาษาอังกฤษ 1" },
-  { code: "ท22101", name: "ภาษาไทย 3" },
-  { code: "ค22101", name: "คณิตศาสตร์ 3" },
-  { code: "ว22101", name: "วิทยาศาสตร์ 3" },
-  { code: "ส22101", name: "สังคมศึกษา 3" },
-  { code: "พ22101", name: "สุขศึกษา 3" },
-  { code: "ศ22101", name: "ศิลปะ 3" },
-  { code: "ง22101", name: "การงานอาชีพ 3" },
-  { code: "อ22101", name: "ภาษาอังกฤษ 3" },
-  { code: "ท23101", name: "ภาษาไทย 5" },
-  { code: "ค23101", name: "คณิตศาสตร์ 5" },
-  { code: "ว23101", name: "วิทยาศาสตร์ 5" },
-  { code: "ส23101", name: "สังคมศึกษา 5" },
-  { code: "พ23101", name: "สุขศึกษา 5" },
-  { code: "ศ23101", name: "ศิลปะ 5" },
-  { code: "ง23101", name: "การงานอาชีพ 5" },
-  { code: "อ23101", name: "ภาษาอังกฤษ 5" },
-  { code: "ท31101", name: "ภาษาไทย 1" },
-  { code: "ค31101", name: "คณิตศาสตร์ 1" },
-  { code: "ว31101", name: "วิทยาศาสตร์กายภาพ 1" },
-  { code: "ส31101", name: "สังคมศึกษา 1" },
-  { code: "พ31101", name: "สุขศึกษา 1" },
-  { code: "ศ31101", name: "ศิลปะ 1" },
-  { code: "ง31101", name: "การงานอาชีพ 1" },
-  { code: "อ31101", name: "ภาษาอังกฤษ 1" },
-];
-
 const SubmitWorkPage = ({ currentUser, handleSubmitWork, setPage, handleLogoutClick, showPopup }) => {
   const [formData, setFormData] = useState({
     studentName: '',
@@ -377,17 +335,6 @@ const SubmitWorkPage = ({ currentUser, handleSubmitWork, setPage, handleLogoutCl
     setShowConfirmSubmit(false);
   };
 
-  const handleSubjectChange = (e) => {
-    const val = e.target.value;
-    const sub = SUBJECTS.find(s => s.code === val);
-    if (sub) {
-      setFormData({ ...formData, subjectCode: sub.code, subjectName: sub.name });
-    } else {
-      // Manual entry or reset
-      setFormData({ ...formData, subjectCode: '', subjectName: '' });
-    }
-  };
-
   return (
     <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -407,51 +354,23 @@ const SubmitWorkPage = ({ currentUser, handleSubmitWork, setPage, handleLogoutCl
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ชั้น: *</label>
-            <select
+            <input
+              type="text"
+              placeholder="เช่น ม.1/1"
               value={formData.grade}
               onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
               required
               style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-            >
-              <option value="">เลือกชั้นเรียน</option>
-              {CLASSES.map(cls => (
-                <option key={cls} value={cls}>{cls}</option>
-              ))}
-              <option value="other">อื่นๆ (ระบุเอง)</option>
-            </select>
-            {formData.grade === 'other' && (
-              <input
-                type="text"
-                placeholder="ระบุชั้นเรียน"
-                onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px', marginTop: '5px' }}
-              />
-            )}
+            />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัสนักเรียน: *</label>
             <input type="text" placeholder="เช่น 12345" value={formData.studentId} onChange={(e) => setFormData({ ...formData, studentId: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
           </div>
 
-          {/* Combined Subject Selection */}
-          <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>เลือกวิชา: *</label>
-              <select
-                onChange={handleSubjectChange}
-                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
-              >
-                <option value="">-- เลือกวิชา --</option>
-                {SUBJECTS.map(sub => (
-                  <option key={sub.code} value={sub.code}>{sub.code} - {sub.name}</option>
-                ))}
-                <option value="other">อื่นๆ (กรอกเอง)</option>
-              </select>
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัสวิชา: *</label>
-              <input type="text" placeholder="เช่น ค21101" value={formData.subjectCode} onChange={(e) => setFormData({ ...formData, subjectCode: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: '#f9f9f9' }} />
-            </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัสวิชา: *</label>
+            <input type="text" placeholder="เช่น ค21101" value={formData.subjectCode} onChange={(e) => setFormData({ ...formData, subjectCode: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
           </div>
 
           <div style={{ gridColumn: '1 / -1' }}>
