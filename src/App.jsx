@@ -426,77 +426,295 @@ const SubmitWorkPage = ({ handleSubmitWork, handleLogout, setPage, showPopup }) 
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>ส่งงานแก้</h2>
+    <div style={{ maxWidth: '800px', margin: '40px auto', padding: '0 20px' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '30px',
+        backgroundColor: 'white',
+        padding: '20px 30px',
+        borderRadius: '16px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}>
         <div>
-          <button onClick={() => setPage('history')} style={{ marginRight: '10px', padding: '10px 20px', backgroundColor: '#66BB6A', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ประวัติ</button>
-          <button onClick={handleLogout} style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <LogOut size={16} /> ออกจากระบบ
+          <h2 style={{ margin: '0 0 5px 0', color: '#2E7D32', fontSize: '24px' }}>ส่งงานแก้</h2>
+          <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>กรอกข้อมูลให้ครบถ้วนเพื่อส่งงาน</p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setPage('history')}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: 'white',
+              color: '#4CAF50',
+              border: '1px solid #4CAF50',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            className="hover-green-bg"
+          >
+            <RotateCcw size={18} /> ประวัติการส่ง
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#ffebee',
+              color: '#d32f2f',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontWeight: '600',
+              transition: 'all 0.2s'
+            }}
+            className="hover-red-bg"
+          >
+            <LogOut size={18} /> ออกจากระบบ
           </button>
         </div>
       </div>
-      <form onSubmit={handleSubmit} style={{ border: '1px solid #ddd', padding: '30px', backgroundColor: 'white', borderRadius: '8px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ชื่อ-นามสกุล: *</label>
-            <input type="text" value={formData.studentName} onChange={(e) => setFormData({ ...formData, studentName: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ชั้น: *</label>
-            <input type="text" placeholder="เช่น ม.4/1" value={formData.grade} onChange={(e) => setFormData({ ...formData, grade: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัสนักเรียน: *</label>
-            <input type="text" placeholder="เช่น 12345" value={formData.studentId} onChange={(e) => setFormData({ ...formData, studentId: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
-          </div>
 
-          <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รหัสวิชา: *</label>
-              <input type="text" placeholder="เช่น ค21101" value={formData.subjectCode} onChange={(e) => setFormData({ ...formData, subjectCode: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ชื่อวิชา: *</label>
-              <input type="text" placeholder="เช่น คณิตศาสตร์" value={formData.subjectName} onChange={(e) => setFormData({ ...formData, subjectName: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
-            </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ติด: *</label>
-              <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
-                <option value="ศูนย์">ศูนย์</option>
-                <option value="ร.">ร.</option>
-                <option value="มส.">มส.</option>
-                <option value="มพ.">มพ.</option>
-              </select>
-            </div>
-          </div>
-
+      <form onSubmit={handleSubmit} style={{
+        backgroundColor: 'white',
+        padding: '30px',
+        borderRadius: '16px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>ชั้นที่ติด-ปีการศึกษา: *</label>
-            <input type="text" placeholder="เช่น 4/3 2567" value={formData.gradeYear} onChange={(e) => setFormData({ ...formData, gradeYear: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>ชื่อ-นามสกุล</label>
+            <input
+              type="text"
+              value={formData.studentName}
+              onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
+              required
+              placeholder="ระบุชื่อ-นามสกุล"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none'
+              }}
+            />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>วันที่ส่ง: *</label>
-            <input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>รหัสประจำตัว</label>
+            <input
+              type="text"
+              value={formData.studentId}
+              onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
+              required
+              placeholder="ระบุรหัสประจำตัว"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none'
+              }}
+            />
           </div>
         </div>
 
-        <div style={{ marginTop: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>รูปงานแก้: *</label>
-          <input type="file" multiple accept="image/*" onChange={handleImageUpload} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>รหัสวิชา</label>
+            <input
+              type="text"
+              value={formData.subjectCode}
+              onChange={(e) => setFormData({ ...formData, subjectCode: e.target.value })}
+              required
+              placeholder="เช่น ว30101"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>ชื่อวิชา</label>
+            <input
+              type="text"
+              value={formData.subjectName}
+              onChange={(e) => setFormData({ ...formData, subjectName: e.target.value })}
+              required
+              placeholder="ระบุชื่อวิชา"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none'
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '25px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>ประเภทงาน</label>
+            <select
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              <option value="ศูนย์">แก้ 0</option>
+              <option value="ร">แก้ ร</option>
+              <option value="มส">แก้ มส</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>เกรดเดิม</label>
+            <input
+              type="text"
+              value={formData.grade}
+              onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+              required
+              placeholder="ระบุเกรด"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px', color: '#333' }}>ปีการศึกษา</label>
+            <input
+              type="text"
+              value={formData.gradeYear}
+              onChange={(e) => setFormData({ ...formData, gradeYear: e.target.value })}
+              required
+              placeholder="เช่น 2567"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '10px',
+                fontSize: '15px',
+                backgroundColor: '#f9f9f9',
+                outline: 'none'
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: '30px' }}>
+          <label style={{ display: 'block', marginBottom: '12px', fontWeight: '600', fontSize: '14px', color: '#333' }}>รูปภาพผลงาน</label>
+          <div style={{
+            border: '2px dashed #e0e0e0',
+            borderRadius: '12px',
+            padding: '30px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            backgroundColor: '#fafafa'
+          }}
+          onClick={() => document.getElementById('file-upload').click()}
+          className="hover-border-green"
+          >
+            <input
+              id="file-upload"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+            />
+            <Upload size={32} color="#4CAF50" style={{ marginBottom: '10px' }} />
+            <p style={{ margin: '0 0 5px 0', color: '#333', fontWeight: '500' }}>คลิกเพื่ออัปโหลดรูปภาพ</p>
+            <p style={{ margin: 0, color: '#999', fontSize: '13px' }}>รองรับไฟล์ JPG, PNG (สูงสุด 5 รูป)</p>
+          </div>
+
           {formData.images.length > 0 && (
-            <div style={{ marginTop: '15px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '15px', overflowX: 'auto', paddingBottom: '5px' }}>
               {formData.images.map((img, idx) => (
-                <div key={idx} style={{ position: 'relative' }}>
-                  <img src={img} alt={`preview ${idx}`} style={{ width: '100%', height: '120px', objectFit: 'cover', border: '2px solid #ddd', borderRadius: '4px' }} />
-                  <button type="button" onClick={() => removeImage(idx)} style={{ position: 'absolute', top: '5px', right: '5px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '50%', width: '25px', height: '25px', cursor: 'pointer', fontSize: '16px' }}>×</button>
+                <div key={idx} style={{ position: 'relative', width: '100px', height: '100px', flexShrink: 0 }}>
+                  <img
+                    src={img}
+                    alt={`Upload ${idx + 1}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid #eee' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
+                    style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      right: '-8px',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      backgroundColor: '#ff5252',
+                      color: 'white',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    <X size={14} />
+                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
-        <button type="submit" style={{ marginTop: '25px', padding: '12px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', width: '100%', borderRadius: '4px', fontWeight: 'bold', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-          <Upload size={18} /> ส่งงาน
+
+        <button
+          type="submit"
+          style={{
+            width: '100%',
+            padding: '16px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '16px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            transition: 'all 0.3s',
+            boxShadow: '0 10px 20px rgba(76, 175, 80, 0.2)'
+          }}
+          className="submit-btn"
+        >
+          ส่งงาน
         </button>
       </form>
     </div>
@@ -504,165 +722,148 @@ const SubmitWorkPage = ({ handleSubmitWork, handleLogout, setPage, showPopup }) 
 };
 
 const HistoryPage = ({ userSubmissions, handleLogout, setPage, setViewImage }) => {
-  const [localSearchTerm, setLocalSearchTerm] = useState('');
-  const [localSearchType, setLocalSearchType] = useState('subject');
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
-
-  const getFilteredSubmissions = () => {
-    let filtered = userSubmissions;
-
-    if (localSearchTerm) {
-      filtered = filtered.filter(sub => {
-        if (localSearchType === 'subject') {
-          return sub.subjectName.toLowerCase().includes(localSearchTerm.toLowerCase());
-        } else {
-          return sub.subjectCode.toLowerCase().includes(localSearchTerm.toLowerCase());
-        }
-      });
-    }
-    return filtered;
-  };
-
-  const filteredSubmissions = getFilteredSubmissions();
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'รอตรวจ': return '#FFC107';
-      case 'ตรวจแล้ว': return '#4CAF50';
-      case 'แก้ไข': return '#f44336';
-      case 'ถูกลบ': return '#9E9E9E';
-      default: return '#9E9E9E';
-    }
-  };
-
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>ประวัติการส่งงาน ({filteredSubmissions.length} งาน)</h2>
+    <div style={{ maxWidth: '800px', margin: '40px auto', padding: '0 20px' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '30px',
+        backgroundColor: 'white',
+        padding: '20px 30px',
+        borderRadius: '16px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}>
         <div>
-          <button onClick={() => setPage('submit')} style={{ marginRight: '10px', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>ส่งงานใหม่</button>
-          <button onClick={handleLogout} style={{ padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <LogOut size={16} /> ออกจากระบบ
+          <h2 style={{ margin: '0 0 5px 0', color: '#2E7D32', fontSize: '24px' }}>ประวัติการส่งงาน</h2>
+          <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>รายการงานที่คุณส่งทั้งหมด</p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setPage('submit')}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: 'white',
+              color: '#4CAF50',
+              border: '1px solid #4CAF50',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            className="hover-green-bg"
+          >
+            <Upload size={18} /> ส่งงานใหม่
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#ffebee',
+              color: '#d32f2f',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontWeight: '600',
+              transition: 'all 0.2s'
+            }}
+            className="hover-red-bg"
+          >
+            <LogOut size={18} /> ออกจากระบบ
           </button>
         </div>
       </div>
 
-      <div style={{ marginBottom: '25px', display: 'flex', gap: '10px', backgroundColor: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #ddd' }}>
-        <select value={localSearchType} onChange={(e) => setLocalSearchType(e.target.value)} style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '4px', minWidth: '180px' }}>
-          <option value="subject">ค้นหาด้วยชื่อวิชา</option>
-          <option value="code">ค้นหาด้วยรหัสวิชา</option>
-        </select>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <input
-            type="text"
-            placeholder={`ค้นหา${localSearchType === 'subject' ? 'ชื่อวิชา' : 'รหัสวิชา'}...`}
-            value={localSearchTerm}
-            onChange={(e) => setLocalSearchTerm(e.target.value)}
-            style={{ width: '100%', padding: '10px 40px 10px 10px', border: '1px solid #ddd', borderRadius: '4px' }}
-          />
-          <Search size={20} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#666' }} />
-        </div>
-      </div>
-
-      {filteredSubmissions.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '50px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid #ddd' }}>
-          <p style={{ fontSize: '18px', color: '#666' }}>
-            {localSearchTerm ? 'ไม่พบงานที่ค้นหา' : 'ยังไม่มีประวัติการส่งงาน'}
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gap: '15px' }}>
-          {filteredSubmissions.map(sub => (
-            <div key={sub.id} style={{ border: '1px solid #ddd', padding: '20px', cursor: 'pointer', backgroundColor: sub.isDeleted ? '#f5f5f5' : 'white', borderRadius: '8px', transition: 'transform 0.2s', opacity: sub.isDeleted ? 0.7 : 1 }} onClick={() => setSelectedSubmission(sub)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 10px 0' }}>
-                    {sub.subjectName} ({sub.subjectCode})
-                    {sub.isDeleted && <span style={{ marginLeft: '10px', fontSize: '14px', color: '#9E9E9E' }}>🗑️ อยู่ในถังขยะ</span>}
-                  </h3>
-                  <p style={{ margin: '5px 0', color: '#666' }}>ติด {sub.type} | ส่งเมื่อ {new Date(sub.submittedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-                  <p style={{ margin: '5px 0', color: '#666' }}>รูปงาน: {sub.images?.length || 0} รูป</p>
-                  {sub.isDeleted && (
-                    <p style={{ margin: '5px 0', color: '#f44336', fontSize: '13px' }}>
-                      ถูกย้ายไปถังขยะเมื่อ: {new Date(sub.deletedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  )}
+      <div style={{ display: 'grid', gap: '20px' }}>
+        {userSubmissions.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '60px',
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            color: '#888',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+          }}>
+            <AlertCircle size={48} style={{ marginBottom: '15px', opacity: 0.5 }} />
+            <p>ยังไม่มีประวัติการส่งงาน</p>
+          </div>
+        ) : (
+          userSubmissions.map((sub) => (
+            <div key={sub.id} style={{
+              backgroundColor: 'white',
+              borderRadius: '16px',
+              padding: '25px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+              transition: 'transform 0.2s',
+              border: '1px solid #eee'
+            }} className="hover-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                <div>
+                  <h3 style={{ margin: '0 0 5px 0', fontSize: '18px', color: '#333' }}>{sub.subjectName} ({sub.subjectCode})</h3>
+                  <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+                    ส่งเมื่อ: {new Date(sub.submittedAt).toLocaleDateString('th-TH', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
                 </div>
-                <div style={{ padding: '8px 16px', backgroundColor: getStatusColor(sub.isDeleted ? 'ถูกลบ' : sub.status), color: 'white', borderRadius: '4px', fontWeight: 'bold' }}>
-                  {sub.isDeleted ? 'ถูกลบ' : sub.status}
+                <div style={{
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  height: 'fit-content',
+                  backgroundColor:
+                    sub.status === 'ตรวจแล้ว' ? '#e8f5e9' :
+                    sub.status === 'กำลังตรวจ' ? '#fff3e0' : '#f5f5f5',
+                  color:
+                    sub.status === 'ตรวจแล้ว' ? '#2e7d32' :
+                    sub.status === 'กำลังตรวจ' ? '#ef6c00' : '#757575'
+                }}>
+                  {sub.status}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
 
-      {selectedSubmission && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setSelectedSubmission(null)}>
-          <div style={{ backgroundColor: 'white', padding: '30px', maxWidth: '700px', maxHeight: '85vh', overflow: 'auto', borderRadius: '8px', width: '90%' }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ marginTop: 0, borderBottom: '2px solid #4CAF50', paddingBottom: '10px' }}>รายละเอียดงาน</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-              <div><strong>ชื่อ:</strong> {selectedSubmission.studentName}</div>
-              <div><strong>ชั้น:</strong> {selectedSubmission.grade}</div>
-              <div><strong>รหัสนักเรียน:</strong> {selectedSubmission.studentId}</div>
-              <div><strong>รหัสวิชา:</strong> {selectedSubmission.subjectCode}</div>
-              <div style={{ gridColumn: '1 / -1' }}><strong>ชื่อวิชา:</strong> {selectedSubmission.subjectName}</div>
-              <div><strong>ติด:</strong> {selectedSubmission.type}</div>
-              <div><strong>ชั้นที่ติด-ปีการศึกษา:</strong> {selectedSubmission.gradeYear}</div>
-              <div style={{ gridColumn: '1 / -1' }}><strong>วันที่ส่ง:</strong> {new Date(selectedSubmission.date).toLocaleDateString('th-TH')}</div>
-              {selectedSubmission.completedAt && (
-                <div style={{ gridColumn: '1 / -1', backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '4px' }}>
-                  <strong>✅ ตรวจเสร็จเมื่อ:</strong> {new Date(selectedSubmission.completedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                </div>
-              )}
-              <div style={{ gridColumn: '1 / -1' }}>
-                <strong>สถานะ:</strong>
-                <span style={{ marginLeft: '10px', padding: '5px 12px', backgroundColor: getStatusColor(selectedSubmission.status), color: 'white', borderRadius: '4px', fontWeight: 'bold' }}>
-                  {selectedSubmission.status}
-                </span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px', marginBottom: '15px' }}>
+                <div><span style={{ color: '#888', fontSize: '13px' }}>งานประเภท:</span> <span style={{ color: '#333' }}>{sub.type}</span></div>
+                <div><span style={{ color: '#888', fontSize: '13px' }}>เกรดเดิม:</span> <span style={{ color: '#333' }}>{sub.grade}</span></div>
+                <div><span style={{ color: '#888', fontSize: '13px' }}>ปีการศึกษา:</span> <span style={{ color: '#333' }}>{sub.gradeYear}</span></div>
               </div>
-            </div>
 
-            {selectedSubmission.images && selectedSubmission.images.length > 0 && (
-              <div style={{ marginTop: '20px' }}>
-                <strong style={{ display: 'block', marginBottom: '10px' }}>รูปงาน ({selectedSubmission.images.length} รูป):</strong>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                  {selectedSubmission.images.map((img, idx) => (
+              {sub.images && sub.images.length > 0 && (
+                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
+                  {sub.images.map((img, idx) => (
                     <div
                       key={idx}
-                      style={{ position: 'relative', cursor: 'pointer' }}
                       onClick={() => setViewImage(img)}
-                    >
-                      <img
-                        src={img}
-                        alt={`work ${idx + 1}`}
-                        style={{ width: '100%', height: '200px', objectFit: 'cover', border: '2px solid #ddd', borderRadius: '4px' }}
-                      />
-                      <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        backgroundColor: 'rgba(0,0,0,0.6)',
-                        color: 'white',
-                        padding: '8px',
-                        borderRadius: '50%',
-                        opacity: 0,
-                        transition: 'opacity 0.3s',
-                        pointerEvents: 'none'
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        border: '1px solid #eee',
+                        flexShrink: 0
                       }}
-                        className="zoom-icon">
-                        <ZoomIn size={24} />
-                      </div>
+                    >
+                      <img src={img} alt={`Work ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-            <button onClick={() => setSelectedSubmission(null)} style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#666', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>ปิด</button>
-          </div>
-        </div>
-      )}
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
@@ -983,120 +1184,102 @@ const AdminPage = ({ submissions, handleLogout, updateSubmission, deleteSubmissi
   );
 };
 
-// Main App Component
 const App = () => {
+  const [page, setPage] = useState('login');
   const [user, setUser] = useState(null);
-  const [page, setPage] = useState('login'); // login, submit, history, admin
   const [submissions, setSubmissions] = useState([]);
   const [viewImage, setViewImage] = useState(null);
   const [popup, setPopup] = useState({ show: false, message: '', type: 'success' });
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('regradeUser');
-    const savedSubmissions = localStorage.getItem('regradeSubmissions');
-
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      setPage(parsedUser.isAdmin ? 'admin' : 'submit');
-    }
-
+    const savedSubmissions = localStorage.getItem('submissions');
     if (savedSubmissions) {
       setSubmissions(JSON.parse(savedSubmissions));
     }
+
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      setPage(JSON.parse(savedUser).isAdmin ? 'admin' : 'submit');
+    }
   }, []);
+
+  // Save submissions to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('submissions', JSON.stringify(submissions));
+  }, [submissions]);
 
   const showPopup = (message, type = 'success') => {
     setPopup({ show: true, message, type });
-    setTimeout(() => setPopup({ ...popup, show: false }), 3000);
+    setTimeout(() => setPopup({ show: false, message: '', type: 'success' }), 3000);
   };
 
   const handleLogin = (email, password) => {
-    // 1. Check Hardcoded Admin
-    if (email === 'admin@taweethapisek.ac.th' && password === 'admin1234') {
-      const adminUser = { name: 'Admin', email, isAdmin: true };
-      loginUser(adminUser);
+    if (email === 'admin' && password === ADMIN_SECRET_CODE) {
+      const adminUser = { name: 'Admin', email: 'admin', isAdmin: true };
+      setUser(adminUser);
+      localStorage.setItem('user', JSON.stringify(adminUser));
+      setPage('admin');
+      showPopup('เข้าสู่ระบบผู้ดูแลระบบสำเร็จ');
       return;
     }
 
-    // 2. Check Registered Users from LocalStorage
-    const usersList = JSON.parse(localStorage.getItem('regradeUsersList') || '[]');
-    const foundUser = usersList.find(u => u.email === email && u.password === password);
-
-    if (foundUser) {
-      loginUser(foundUser);
-    } else {
-      // Fallback for demo/testing if no user found (Optional: remove this if you want strict login)
-      // For now, let's show error if not found to be correct
-      showPopup('อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
-    }
-  };
-
-  const loginUser = (userData) => {
-    setUser(userData);
-    localStorage.setItem('regradeUser', JSON.stringify(userData));
-    setPage(userData.isAdmin ? 'admin' : 'submit');
-    showPopup(userData.isAdmin ? 'เข้าสู่ระบบผู้ดูแลระบบสำเร็จ' : 'เข้าสู่ระบบสำเร็จ');
+    // Mock login for students
+    const studentUser = { name: 'Student', email, isAdmin: false, studentId: '12345' }; // Mock ID
+    setUser(studentUser);
+    localStorage.setItem('user', JSON.stringify(studentUser));
+    setPage('submit');
+    showPopup('เข้าสู่ระบบสำเร็จ');
   };
 
   const handleRegister = (email, password, name, adminCode) => {
-    if (adminCode && adminCode !== ADMIN_SECRET_CODE) {
-      showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
-      return;
-    }
-
-    // Check if email already exists
-    const usersList = JSON.parse(localStorage.getItem('regradeUsersList') || '[]');
-    if (usersList.some(u => u.email === email)) {
-      showPopup('อีเมลนี้ถูกใช้งานแล้ว', 'error');
-      return;
-    }
-
-    const newUser = {
-      name,
-      email,
-      password, // In a real app, never store plain passwords!
-      isAdmin: !!adminCode
-    };
-
-    // Save to list
-    usersList.push(newUser);
-    localStorage.setItem('regradeUsersList', JSON.stringify(usersList));
-
-    // Auto login
-    loginUser(newUser);
-    showPopup('ลงทะเบียนสำเร็จ');
+     if (adminCode === ADMIN_SECRET_CODE) {
+        const adminUser = { name, email, isAdmin: true };
+        setUser(adminUser);
+        localStorage.setItem('user', JSON.stringify(adminUser));
+        setPage('admin');
+        showPopup('ลงทะเบียนผู้ดูแลระบบสำเร็จ');
+     } else {
+        const studentUser = { name, email, isAdmin: false, studentId: Math.floor(10000 + Math.random() * 90000).toString() };
+        setUser(studentUser);
+        localStorage.setItem('user', JSON.stringify(studentUser));
+        setPage('submit');
+        showPopup('ลงทะเบียนสำเร็จ');
+     }
   };
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     setUser(null);
-    localStorage.removeItem('regradeUser');
     setPage('login');
-    showPopup('ออกจากระบบแล้ว');
+    localStorage.removeItem('user');
+    setShowLogoutConfirm(false);
+    showPopup('ออกจากระบบเรียบร้อย');
   };
 
   const handleSubmitWork = (data) => {
     const newSubmission = {
-      id: Date.now(),
+      id: Date.now().toString(),
       ...data,
       status: 'รอตรวจ',
       submittedAt: new Date().toISOString(),
       isDeleted: false
     };
-
-    const updatedSubmissions = [newSubmission, ...submissions];
-    setSubmissions(updatedSubmissions);
-    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
-    showPopup('ส่งงานเรียบร้อยแล้ว');
+    setSubmissions([newSubmission, ...submissions]);
     setPage('history');
+    showPopup('ส่งงานเรียบร้อย');
   };
 
-  const updateSubmission = (id, updates) => {
+  const updateSubmission = (id, data) => {
     const updatedSubmissions = submissions.map(sub => {
       if (sub.id === id) {
-        const updated = { ...sub, ...updates };
-        if (updates.status === 'ตรวจแล้ว' && sub.status !== 'ตรวจแล้ว') {
+        const updated = { ...sub, ...data };
+        if (data.status === 'ตรวจแล้ว' && sub.status !== 'ตรวจแล้ว') {
           updated.completedAt = new Date().toISOString();
         }
         return updated;
@@ -1104,8 +1287,7 @@ const App = () => {
       return sub;
     });
     setSubmissions(updatedSubmissions);
-    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
-    showPopup('อัปเดตสถานะเรียบร้อย');
+    showPopup('อัปเดตข้อมูลเรียบร้อย');
   };
 
   const deleteSubmission = (id) => {
@@ -1113,7 +1295,6 @@ const App = () => {
       sub.id === id ? { ...sub, isDeleted: true, deletedAt: new Date().toISOString() } : sub
     );
     setSubmissions(updatedSubmissions);
-    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
     showPopup('ย้ายไปถังขยะแล้ว');
   };
 
@@ -1122,39 +1303,139 @@ const App = () => {
       sub.id === id ? { ...sub, isDeleted: false, deletedAt: null } : sub
     );
     setSubmissions(updatedSubmissions);
-    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
-    showPopup('กู้คืนรายการแล้ว');
+    showPopup('กู้คืนรายการเรียบร้อย');
   };
 
   const permanentDeleteSubmission = (id) => {
     const updatedSubmissions = submissions.filter(sub => sub.id !== id);
     setSubmissions(updatedSubmissions);
-    localStorage.setItem('regradeSubmissions', JSON.stringify(updatedSubmissions));
     showPopup('ลบรายการถาวรแล้ว');
   };
 
   return (
-    <div style={{ fontFamily: "'Sarabun', sans-serif", backgroundColor: '#f5f5f5', minHeight: '100vh', paddingBottom: '50px' }}>
-      <Header />
-      <div style={{ paddingTop: '80px' }}>
-        {page === 'login' && <LoginPage handleLogin={handleLogin} handleRegister={handleRegister} />}
-        {page === 'submit' && <SubmitWorkPage handleSubmitWork={handleSubmitWork} handleLogout={handleLogout} setPage={setPage} showPopup={showPopup} />}
-        {page === 'history' && <HistoryPage userSubmissions={submissions.filter(s => !s.isDeleted)} handleLogout={handleLogout} setPage={setPage} setViewImage={setViewImage} />}
-        {page === 'admin' && (
-          <AdminPage
-            submissions={submissions}
-            handleLogout={handleLogout}
-            updateSubmission={updateSubmission}
-            deleteSubmission={deleteSubmission}
-            restoreSubmission={restoreSubmission}
-            permanentDeleteSubmission={permanentDeleteSubmission}
-            setViewImage={setViewImage}
-          />
-        )}
-      </div>
+    <div style={{ fontFamily: "'Sarabun', sans-serif", backgroundColor: '#f5f5f5', minHeight: '100vh', paddingBottom: '40px' }}>
+      <Header user={user} handleLogout={handleLogout} />
 
-      <ImageViewer viewImage={viewImage} onClose={() => setViewImage(null)} />
-      <PopupNotification popup={popup} onClose={() => setPopup({ ...popup, show: false })} />
+      {popup.show && <PopupNotification message={popup.message} type={popup.type} onClose={() => setPopup({ ...popup, show: false })} />}
+
+      {viewImage && <ImageViewer src={viewImage} onClose={() => setViewImage(null)} />}
+
+      {page === 'login' && <LoginPage handleLogin={handleLogin} handleRegister={handleRegister} />}
+
+      {page === 'submit' && (
+        <SubmitWorkPage
+          handleSubmitWork={handleSubmitWork}
+          handleLogout={handleLogout}
+          setPage={setPage}
+          showPopup={showPopup}
+        />
+      )}
+
+      {page === 'history' && (
+        <HistoryPage
+          userSubmissions={submissions.filter(s => s.studentId === user.studentId)}
+          handleLogout={handleLogout}
+          setPage={setPage}
+          setViewImage={setViewImage}
+        />
+      )}
+
+      {page === 'admin' && (
+        <AdminPage
+          submissions={submissions}
+          handleLogout={handleLogout}
+          updateSubmission={updateSubmission}
+          deleteSubmission={deleteSubmission}
+          restoreSubmission={restoreSubmission}
+          permanentDeleteSubmission={permanentDeleteSubmission}
+          setViewImage={setViewImage}
+        />
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000,
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '16px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            animation: 'scaleIn 0.2s ease-out'
+          }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              backgroundColor: '#ffebee',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 20px auto',
+              color: '#d32f2f'
+            }}>
+              <LogOut size={30} />
+            </div>
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '20px', color: '#333' }}>ยืนยันการออกจากระบบ?</h3>
+            <p style={{ color: '#666', marginBottom: '25px', lineHeight: '1.5' }}>
+              คุณต้องการออกจากระบบใช่หรือไม่?
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                style={{
+                  padding: '12px 24px',
+                  border: '1px solid #e0e0e0',
+                  backgroundColor: 'white',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  color: '#666',
+                  flex: 1,
+                  transition: 'all 0.2s'
+                }}
+                className="hover-gray-bg"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={confirmLogout}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#d32f2f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  flex: 1,
+                  boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)',
+                  transition: 'all 0.2s'
+                }}
+                className="hover-red-dark-bg"
+              >
+                ออกจากระบบ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
