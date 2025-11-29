@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { User, Lock, Save, X, ArrowLeft } from 'lucide-react';
+import { User, Lock, Save, X, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
-const ProfilePage = ({ user, onUpdate, onChangePassword, onNavigate }) => {
+const ProfilePage = ({ user, onUpdate, onChangePassword, onNavigate, previousPage }) => {
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || ''
@@ -14,8 +14,14 @@ const ProfilePage = ({ user, onUpdate, onChangePassword, onNavigate }) => {
     });
 
     const [showPasswordSection, setShowPasswordSection] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    // Check if user signed in with Google (no password)
+    const isGoogleUser = !user?.password || user?.password === '';
 
     const handleProfileUpdate = (e) => {
         e.preventDefault();
@@ -49,12 +55,20 @@ const ProfilePage = ({ user, onUpdate, onChangePassword, onNavigate }) => {
         setTimeout(() => setSuccess(''), 3000);
     };
 
+    const handleBackClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onNavigate(previousPage || (user?.isAdmin ? 'admin' : 'history'));
+    };
+
     return (
         <div className="login-container">
             <div className="form-container" style={{ maxWidth: '500px', position: 'relative', paddingTop: '60px' }}>
                 {/* Back Button - Inside container, top left */}
                 <button
-                    onClick={() => onNavigate(user?.isAdmin ? 'admin' : 'history')}
+                    type="button"
+                    onClick={handleBackClick}
+                    className="back-button"
                     style={{
                         position: 'absolute',
                         top: '20px',
@@ -71,14 +85,6 @@ const ProfilePage = ({ user, onUpdate, onChangePassword, onNavigate }) => {
                         fontSize: '14px',
                         transition: 'all 0.2s',
                         zIndex: 10
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f8f9fa';
-                        e.currentTarget.style.color = 'var(--text-primary)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.color = 'var(--text-secondary)';
                     }}
                 >
                     <ArrowLeft size={16} />
@@ -206,97 +212,186 @@ const ProfilePage = ({ user, onUpdate, onChangePassword, onNavigate }) => {
                     </span>
                 </div>
 
-                {/* Password Change Section */}
-                <div>
+                {/* Password Change Section - Only for non-Google users */}
+                {!isGoogleUser ? (
+                    <div>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            marginBottom: '20px',
+                            padding: '16px',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px'
+                        }}>
+                            <Lock size={24} style={{ color: '#4CAF50' }} />
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{ margin: 0, fontSize: '16px', color: 'var(--text-primary)' }}>เปลี่ยนรหัสผ่าน</h3>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                                    อัปเดตรหัสผ่านของคุณเพื่อความปลอดภัย
+                                </p>
+                            </div>
+                        </div>
+
+                        {!showPasswordSection ? (
+                            <button
+                                onClick={() => setShowPasswordSection(true)}
+                                className="btn btn-outline btn-full"
+                                type="button"
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                            >
+                                <Lock size={16} />
+                                เปลี่ยนรหัสผ่าน
+                            </button>
+                        ) : (
+                            <form onSubmit={handlePasswordChange} style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                <div className="form-group">
+                                    <label className="form-label">รหัสผ่านเดิม</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type={showOldPassword ? "text" : "password"}
+                                            value={passwordData.oldPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                                            className="form-input"
+                                            style={{ paddingRight: '45px' }}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowOldPassword(!showOldPassword)}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '12px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: 'var(--text-secondary)',
+                                                padding: '4px',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">รหัสผ่านใหม่</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type={showNewPassword ? "text" : "password"}
+                                            value={passwordData.newPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                            className="form-input"
+                                            style={{ paddingRight: '45px' }}
+                                            required
+                                            minLength={6}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '12px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: 'var(--text-secondary)',
+                                                padding: '4px',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                    <small style={{ color: 'var(--text-secondary)', fontSize: '12px', display: 'block', marginTop: '4px' }}>
+                                        * รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร
+                                    </small>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">ยืนยันรหัสผ่านใหม่</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            value={passwordData.confirmPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                                            className="form-input"
+                                            style={{ paddingRight: '45px' }}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '12px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: 'var(--text-secondary)',
+                                                padding: '4px',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                                    <button type="submit" className="btn btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                        <Save size={16} />
+                                        บันทึกรหัสผ่าน
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowPasswordSection(false);
+                                            setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                                            setError('');
+                                            setShowOldPassword(false);
+                                            setShowNewPassword(false);
+                                            setShowConfirmPassword(false);
+                                        }}
+                                        className="btn btn-secondary"
+                                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                                    >
+                                        <X size={16} />
+                                        ยกเลิก
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+                    </div>
+                ) : (
                     <div style={{
+                        padding: '20px',
+                        backgroundColor: '#e3f2fd',
+                        border: '1px solid #2196F3',
+                        borderRadius: '8px',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '12px',
-                        marginBottom: '20px',
-                        padding: '16px',
-                        backgroundColor: '#f8f9fa',
-                        borderRadius: '8px'
+                        gap: '12px'
                     }}>
-                        <Lock size={24} style={{ color: '#4CAF50' }} />
-                        <div style={{ flex: 1 }}>
-                            <h3 style={{ margin: 0, fontSize: '16px', color: 'var(--text-primary)' }}>เปลี่ยนรหัสผ่าน</h3>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                                อัปเดตรหัสผ่านของคุณเพื่อความปลอดภัย
+                        <Lock size={24} style={{ color: '#2196F3' }} />
+                        <div>
+                            <h3 style={{ margin: 0, fontSize: '16px', color: '#1565c0' }}>เข้าสู่ระบบด้วย Google</h3>
+                            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#1976d2' }}>
+                                คุณเข้าสู่ระบบด้วย Google Account ไม่จำเป็นต้องตั้งรหัสผ่าน
                             </p>
                         </div>
                     </div>
-
-                    {!showPasswordSection ? (
-                        <button
-                            onClick={() => setShowPasswordSection(true)}
-                            className="btn btn-outline btn-full"
-                            type="button"
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                        >
-                            <Lock size={16} />
-                            เปลี่ยนรหัสผ่าน
-                        </button>
-                    ) : (
-                        <form onSubmit={handlePasswordChange} style={{ animation: 'fadeIn 0.3s ease-out' }}>
-                            <div className="form-group">
-                                <label className="form-label">รหัสผ่านเดิม</label>
-                                <input
-                                    type="password"
-                                    value={passwordData.oldPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-                                    className="form-input"
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">รหัสผ่านใหม่</label>
-                                <input
-                                    type="password"
-                                    value={passwordData.newPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                    className="form-input"
-                                    required
-                                    minLength={6}
-                                />
-                                <small style={{ color: 'var(--text-secondary)', fontSize: '12px', display: 'block', marginTop: '4px' }}>
-                                    * รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร
-                                </small>
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">ยืนยันรหัสผ่านใหม่</label>
-                                <input
-                                    type="password"
-                                    value={passwordData.confirmPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                    className="form-input"
-                                    required
-                                />
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                                <button type="submit" className="btn btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                    <Save size={16} />
-                                    บันทึกรหัสผ่าน
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowPasswordSection(false);
-                                        setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
-                                        setError('');
-                                    }}
-                                    className="btn btn-secondary"
-                                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                                >
-                                    <X size={16} />
-                                    ยกเลิก
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                </div>
+                )}
             </div>
         </div>
     );

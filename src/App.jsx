@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { dataService } from './services/dataService';
 import { exportService } from './services/exportService';
+import { authService } from './services/authService';
 import Header from './components/Header';
 import ImageViewer from './components/ImageViewer';
 import PopupNotification from './components/PopupNotification';
@@ -15,15 +16,98 @@ import './index.css';
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [page, setPage] = useState('login');
+  const [previousPage, setPreviousPage] = useState(null);
   const [users, setUsers] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [viewImage, setViewImage] = useState(null);
   const [popup, setPopup] = useState({ show: false, message: '', type: '' });
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Load data and set up real-time listeners
   useEffect(() => {
-    setUsers(dataService.getUsers());
-    setSubmissions(dataService.getSubmissions());
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [usersData, submissionsData] = await Promise.all([
+          dataService.getUsers(),
+          dataService.getSubmissions()
+        ]);
+        setUsers(usersData);
+        setSubmissions(submissionsData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        showPopup('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+
+    // Set up real-time listener for submissions
+    const unsubscribe = dataService.subscribeToSubmissions((updatedSubmissions) => {
+      setSubmissions(updatedSubmissions);
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  // Restore user session on page load
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        // Check localStorage for saved user
+        const savedUser = localStorage.getItem('currentUser');
+        const savedPage = localStorage.getItem('currentPage');
+
+        if (savedUser) {
+          const user = JSON.parse(savedUser);
+          setCurrentUser(user);
+          if (savedPage) {
+            setPage(savedPage);
+          } else {
+            setPage(user.isAdmin ? 'admin' : 'submit');
+          }
+        }
+      } catch (error) {
+        console.error('Error restoring session:', error);
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentPage');
+      }
+    };
+
+    restoreSession();
+
+    // Listen to Firebase Auth state changes
+    const unsubscribeAuth = authService.onAuthStateChange(async (authUser) => {
+      if (authUser) {
+        // User is signed in via Firebase Auth
+        try {
+          const user = await dataService.getUserByEmail(authUser.email);
+          if (user) {
+            setCurrentUser(user);
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            
+            // Check if there's a saved page, otherwise use default
+            const savedPage = localStorage.getItem('currentPage');
+            if (!savedPage) {
+              const targetPage = user.isAdmin ? 'admin' : 'submit';
+              setPage(targetPage);
+              localStorage.setItem('currentPage', targetPage);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading user from Firestore:', error);
+        }
+      }
+    });
+
+    return () => {
+      if (unsubscribeAuth) unsubscribeAuth();
+    };
   }, []);
 
   const showPopup = (message, type = 'success') => {
@@ -31,122 +115,266 @@ const App = () => {
     setTimeout(() => setPopup(prev => ({ ...prev, show: false })), 3000);
   };
 
-  const handleLogin = (email, password) => {
-    const user = users.find(u => u.email === email && u.password === password);
-    if (user) {
+  const handleLogin = async (email, password) => {
+    try {
+      // Try to sign in with Firebase Auth
+      const authUser = await authService.loginWithEmail(email, password);
+      
+      // Get user data from Firestore
+      let user = await dataService.getUserByEmail(email);
+      
+      if (!user) {
+        // If user doesn't exist in Firestore, create from Auth data
+        user = {
+          email: authUser.email,
+          name: authUser.name || email.split('@')[0],
+          password: password, // Store for backward compatibility
+          isAdmin: false
+        };
+        await dataService.saveUser(user);
+        const updatedUsers = [...users, user];
+        setUsers(updatedUsers);
+      }
+      
       setCurrentUser(user);
-      setPage(user.isAdmin ? 'admin' : 'submit');
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      const targetPage = user.isAdmin ? 'admin' : 'submit';
+      setPage(targetPage);
+      localStorage.setItem('currentPage', targetPage);
       showPopup('เข้าสู่ระบบสำเร็จ');
-    } else {
-      showPopup('อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
+    } catch (error) {
+      console.error('Login error:', error);
+      // Fallback to local authentication for backward compatibility
+      const user = users.find(u => u.email === email && u.password === password);
+      if (user) {
+        setCurrentUser(user);
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        const targetPage = user.isAdmin ? 'admin' : 'submit';
+        setPage(targetPage);
+        localStorage.setItem('currentPage', targetPage);
+        showPopup('เข้าสู่ระบบสำเร็จ');
+      } else {
+        showPopup('อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'error');
+      }
     }
   };
 
-  const handleRegister = (formData) => {
-    if (users.some(u => u.email === formData.email)) {
-      showPopup('อีเมลนี้มีผู้ใช้งานแล้ว', 'error');
-      return;
+  const handleRegister = async (formData) => {
+    try {
+      if (users.some(u => u.email === formData.email)) {
+        showPopup('อีเมลนี้มีผู้ใช้งานแล้ว', 'error');
+        return;
+      }
+      if (formData.adminCode && formData.adminCode !== 'ADMIN_TAWEETHAPISEK') {
+        showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
+        return;
+      }
+
+      // Register with Firebase Auth
+      const authUser = await authService.registerWithEmail(
+        formData.email,
+        formData.password,
+        formData.name
+      );
+
+      // Save to Firestore
+      const newUser = { 
+        ...formData, 
+        isAdmin: !!formData.adminCode,
+        uid: authUser.uid 
+      };
+      await dataService.saveUser(newUser);
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      setCurrentUser(newUser);
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+      const targetPage = newUser.isAdmin ? 'admin' : 'submit';
+      setPage(targetPage);
+      localStorage.setItem('currentPage', targetPage);
+      showPopup('สมัครสมาชิกสำเร็จ');
+    } catch (error) {
+      console.error('Registration error:', error);
+      if (error.code === 'auth/email-already-in-use') {
+        showPopup('อีเมลนี้มีผู้ใช้งานแล้วใน Firebase Authentication', 'error');
+      } else {
+        showPopup('เกิดข้อผิดพลาดในการสมัครสมาชิก', 'error');
+      }
     }
-    if (formData.adminCode && formData.adminCode !== '1234') {
-      showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
-      return;
-    }
-    const newUser = { ...formData, isAdmin: !!formData.adminCode };
-    const updatedUsers = [...users, newUser];
-    setUsers(updatedUsers);
-    dataService.saveUsers(updatedUsers);
-    setCurrentUser(newUser);
-    setPage(newUser.isAdmin ? 'admin' : 'submit');
-    showPopup('สมัครสมาชิกสำเร็จ');
   };
 
-  const handleLogout = () => {
+  const handleGoogleSignIn = async () => {
+    try {
+      const googleUser = await authService.signInWithGoogle();
+
+      // Check if user exists in Firestore
+      let user = await dataService.getUserByEmail(googleUser.email);
+
+      if (!user) {
+        // Auto-register new Google user
+        user = {
+          email: googleUser.email,
+          name: googleUser.name,
+          photoURL: googleUser.photoURL,
+          isAdmin: false,
+          password: '', // Google users don't need password
+          uid: googleUser.uid
+        };
+        await dataService.saveUser(user);
+        const updatedUsers = [...users, user];
+        setUsers(updatedUsers);
+      } else {
+        // Update existing user with Google data
+        user = { ...user, photoURL: googleUser.photoURL, uid: googleUser.uid };
+        await dataService.saveUser(user);
+        const updatedUsers = users.map(u => u.email === user.email ? user : u);
+        setUsers(updatedUsers);
+      }
+
+      setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      const targetPage = user.isAdmin ? 'admin' : 'submit';
+      setPage(targetPage);
+      localStorage.setItem('currentPage', targetPage);
+      showPopup('เข้าสู่ระบบด้วย Google สำเร็จ');
+    } catch (error) {
+      console.error('Google Sign-In Error:', error);
+      showPopup('เข้าสู่ระบบด้วย Google ไม่สำเร็จ', 'error');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.signOutUser();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setCurrentUser(null);
     setPage('login');
     setConfirmLogout(false);
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentPage');
   };
 
-  const handleSubmitWork = (data) => {
-    const newSubmission = {
-      id: Date.now().toString(),
-      ...data,
-      userEmail: currentUser?.email,
-      status: 'ยังไม่ตรวจ',
-      submittedAt: new Date().toISOString(),
-      isDeleted: false,
-      isPermanentlyDeleted: false,
-      adminNote: ''
-    };
-    const updated = [...submissions, newSubmission];
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('ส่งงานสำเร็จ');
-    setPage('history');
+  const handleSubmitWork = async (data) => {
+    try {
+      const newSubmission = {
+        id: Date.now().toString(),
+        ...data,
+        userEmail: currentUser?.email,
+        status: 'ยังไม่ตรวจ',
+        submittedAt: new Date().toISOString(),
+        isDeleted: false,
+        isPermanentlyDeleted: false,
+        adminNote: ''
+      };
+      await dataService.addSubmission(newSubmission);
+      showPopup('ส่งงานสำเร็จ');
+      const newPage = 'history';
+      setPage(newPage);
+      localStorage.setItem('currentPage', newPage);
+    } catch (error) {
+      console.error('Submit work error:', error);
+      showPopup('เกิดข้อผิดพลาดในการส่งงาน', 'error');
+    }
   };
 
-  const updateSubmissionStatus = (id, status) => {
-    const updated = submissions.map(s => s.id === id ? { ...s, status, completedAt: status === 'ตรวจแล้ว' ? new Date().toISOString() : s.completedAt } : s);
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('อัปเดตสถานะสำเร็จ');
+  const updateSubmissionStatus = async (id, status) => {
+    try {
+      const updates = {
+        status,
+        completedAt: status === 'ตรวจแล้ว' ? new Date().toISOString() : null
+      };
+      await dataService.updateSubmission(id, updates);
+      showPopup('อัปเดตสถานะสำเร็จ');
+    } catch (error) {
+      console.error('Update status error:', error);
+      showPopup('เกิดข้อผิดพลาดในการอัปเดตสถานะ', 'error');
+    }
   };
 
-  const handleUpdateSubmission = (id, updatedData) => {
-    const updated = submissions.map(s => s.id === id ? { ...s, ...updatedData } : s);
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('อัปเดตข้อมูลสำเร็จ');
+  const handleUpdateSubmission = async (id, updatedData) => {
+    try {
+      await dataService.updateSubmission(id, updatedData);
+      showPopup('อัปเดตข้อมูลสำเร็จ');
+    } catch (error) {
+      console.error('Update submission error:', error);
+      showPopup('เกิดข้อผิดพลาดในการอัปเดตข้อมูล', 'error');
+    }
   };
 
-  const handleUpdateNote = (id, note) => {
-    const updated = submissions.map(s => s.id === id ? { ...s, adminNote: note } : s);
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('บันทึกหมายเหตุสำเร็จ');
+  const handleUpdateNote = async (id, note) => {
+    try {
+      await dataService.updateSubmission(id, { adminNote: note });
+      showPopup('บันทึกหมายเหตุสำเร็จ');
+    } catch (error) {
+      console.error('Update note error:', error);
+      showPopup('เกิดข้อผิดพลาดในการบันทึกหมายเหตุ', 'error');
+    }
   };
 
-  const deleteSubmission = (id) => {
-    const updated = submissions.map(s => s.id === id ? { ...s, isDeleted: true, deletedAt: new Date().toISOString() } : s);
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('ย้ายไปถังขยะแล้ว');
+  const deleteSubmission = async (id) => {
+    try {
+      await dataService.deleteSubmission(id);
+      showPopup('ย้ายไปถังขยะแล้ว');
+    } catch (error) {
+      console.error('Delete submission error:', error);
+      showPopup('เกิดข้อผิดพลาดในการลบ', 'error');
+    }
   };
 
-  const restoreSubmission = (id) => {
-    const updated = submissions.map(s => s.id === id ? { ...s, isDeleted: false, status: 'รอตรวจ' } : s);
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('กู้คืนงานสำเร็จ');
+  const restoreSubmission = async (id) => {
+    try {
+      await dataService.restoreSubmission(id);
+      showPopup('กู้คืนงานสำเร็จ');
+    } catch (error) {
+      console.error('Restore submission error:', error);
+      showPopup('เกิดข้อผิดพลาดในการกู้คืน', 'error');
+    }
   };
 
-  const permanentDeleteSubmission = (id) => {
-    const updated = submissions.map(s => s.id === id ? { ...s, isPermanentlyDeleted: true } : s);
-    setSubmissions(updated);
-    dataService.saveSubmissions(updated);
-    showPopup('ลบงานถาวรแล้ว');
+  const permanentDeleteSubmission = async (id) => {
+    try {
+      await dataService.permanentDeleteSubmission(id);
+      showPopup('ลบงานถาวรแล้ว');
+    } catch (error) {
+      console.error('Permanent delete error:', error);
+      showPopup('เกิดข้อผิดพลาดในการลบถาวร', 'error');
+    }
   };
 
   // Profile Management
-  const handleUpdateProfile = (profileData) => {
-    const updatedUser = { ...currentUser, ...profileData };
-    const updatedUsers = users.map(u => u.email === currentUser.email ? updatedUser : u);
-    setUsers(updatedUsers);
-    setCurrentUser(updatedUser);
-    dataService.saveUsers(updatedUsers);
-    showPopup('อัปเดตโปรไฟล์สำเร็จ');
+  const handleUpdateProfile = async (profileData) => {
+    try {
+      const updatedUser = { ...currentUser, ...profileData };
+      await dataService.saveUser(updatedUser);
+      const updatedUsers = users.map(u => u.email === currentUser.email ? updatedUser : u);
+      setUsers(updatedUsers);
+      setCurrentUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      showPopup('อัปเดตโปรไฟล์สำเร็จ');
+    } catch (error) {
+      console.error('Update profile error:', error);
+      showPopup('เกิดข้อผิดพลาดในการอัปเดตโปรไฟล์', 'error');
+    }
   };
 
-  const handleChangePassword = (oldPassword, newPassword) => {
-    if (currentUser.password !== oldPassword) {
-      showPopup('รหัสผ่านเดิมไม่ถูกต้อง', 'error');
-      return;
+  const handleChangePassword = async (oldPassword, newPassword) => {
+    try {
+      if (currentUser.password !== oldPassword) {
+        showPopup('รหัสผ่านเดิมไม่ถูกต้อง', 'error');
+        return;
+      }
+      const updatedUser = { ...currentUser, password: newPassword };
+      await dataService.saveUser(updatedUser);
+      const updatedUsers = users.map(u => u.email === currentUser.email ? updatedUser : u);
+      setUsers(updatedUsers);
+      setCurrentUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      showPopup('เปลี่ยนรหัสผ่านสำเร็จ');
+    } catch (error) {
+      console.error('Change password error:', error);
+      showPopup('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน', 'error');
     }
-    const updatedUser = { ...currentUser, password: newPassword };
-    const updatedUsers = users.map(u => u.email === currentUser.email ? updatedUser : u);
-    setUsers(updatedUsers);
-    setCurrentUser(updatedUser);
-    dataService.saveUsers(updatedUsers);
-    showPopup('เปลี่ยนรหัสผ่านสำเร็จ');
   };
 
   // Export Handler (Admin only)
@@ -164,22 +392,43 @@ const App = () => {
     }
   };
 
+  const handleNavigateToProfile = () => {
+    setPreviousPage(page);
+    const newPage = 'profile';
+    setPage(newPage);
+    localStorage.setItem('currentPage', newPage);
+  };
+
+  if (loading) {
+    return (
+      <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '20px' }}>⏳</div>
+          <p style={{ fontSize: '18px', color: 'var(--text-secondary)' }}>กำลังโหลดข้อมูล...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <Header
         currentUser={currentUser}
-        onNavigateToProfile={() => setPage('profile')}
+        onNavigateToProfile={handleNavigateToProfile}
       />
       <ImageViewer image={viewImage} onClose={() => setViewImage(null)} />
       <PopupNotification popup={popup} onClose={() => setPopup({ ...popup, show: false })} />
       <ConfirmLogoutDialog show={confirmLogout} onConfirm={handleLogout} onCancel={() => setConfirmLogout(false)} />
 
-      {!currentUser && <LoginPage onLogin={handleLogin} onRegister={handleRegister} />}
+      {!currentUser && <LoginPage onLogin={handleLogin} onRegister={handleRegister} onGoogleSignIn={handleGoogleSignIn} />}
 
       {currentUser && !currentUser.isAdmin && page === 'submit' && (
         <SubmitWorkPage
           onSubmit={handleSubmitWork}
-          onNavigate={setPage}
+          onNavigate={(newPage) => {
+            setPage(newPage);
+            localStorage.setItem('currentPage', newPage);
+          }}
           currentUser={currentUser}
           onLogout={() => setConfirmLogout(true)}
         />
@@ -188,7 +437,10 @@ const App = () => {
       {currentUser && !currentUser.isAdmin && page === 'history' && (
         <HistoryPage
           submissions={submissions.filter(s => s.userEmail === currentUser.email || s.studentName === currentUser.name)}
-          onNavigate={setPage}
+          onNavigate={(newPage) => {
+            setPage(newPage);
+            localStorage.setItem('currentPage', newPage);
+          }}
           onLogout={() => setConfirmLogout(true)}
           onViewImage={setViewImage}
         />
@@ -214,7 +466,11 @@ const App = () => {
           user={currentUser}
           onUpdate={handleUpdateProfile}
           onChangePassword={handleChangePassword}
-          onNavigate={setPage}
+          onNavigate={(newPage) => {
+            setPage(newPage);
+            localStorage.setItem('currentPage', newPage);
+          }}
+          previousPage={previousPage}
         />
       )}
     </div>
