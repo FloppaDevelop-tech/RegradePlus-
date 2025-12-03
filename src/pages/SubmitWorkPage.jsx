@@ -15,6 +15,14 @@ const SubmitWorkPage = ({ onSubmit, onNavigate, currentUser, onLogout }) => {
     });
     const [isDragging, setIsDragging] = useState(false);
 
+    // Update date to today when component mounts
+    React.useEffect(() => {
+        setFormData(prev => ({
+            ...prev,
+            date: new Date().toISOString().split('T')[0]
+        }));
+    }, []);
+
     const processFiles = (files) => {
         const fileArray = Array.from(files).filter(file => file.type.startsWith('image/'));
         Promise.all(fileArray.map(file => new Promise((resolve) => {

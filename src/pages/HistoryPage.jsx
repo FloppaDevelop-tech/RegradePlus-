@@ -66,7 +66,7 @@ const HistoryPage = ({ submissions, onNavigate, onLogout, onViewImage }) => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                                 <div style={{ flex: 1 }}>
                                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', color: 'var(--text-primary)' }}>{sub.subjectName} ({sub.subjectCode})</h3>
-                                    <p style={{ margin: '5px 0', color: 'var(--text-secondary)' }}>ติด {sub.type} | ส่งเมื่อ {new Date(sub.submittedAt).toLocaleDateString('th-TH')}</p>
+                                    <p style={{ margin: '5px 0', color: 'var(--text-secondary)' }}>ติด {sub.type} | ส่งเมื่อ {new Date(sub.submittedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                                 </div>
                                 <div className={`status-badge ${getStatusColor(sub.status)}`} style={{ padding: '8px 16px' }}>{sub.status}</div>
                             </div>
@@ -94,7 +94,7 @@ const HistoryPage = ({ submissions, onNavigate, onLogout, onViewImage }) => {
                                         <div style={{ gridColumn: '1 / -1' }}><strong>ชื่อวิชา:</strong> {sub.subjectName}</div>
                                         <div><strong>ติด:</strong> {sub.type}</div>
                                         <div><strong>ชั้นที่ติด-ปีการศึกษา:</strong> {sub.gradeYear}</div>
-                                        <div style={{ gridColumn: '1 / -1' }}><strong>วันที่ส่ง:</strong> {new Date(sub.date).toLocaleDateString('th-TH')}</div>
+                                        <div style={{ gridColumn: '1 / -1' }}><strong>วันที่ส่ง:</strong> {new Date(sub.submittedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                                         {sub.completedAt && <div style={{ gridColumn: '1 / -1', backgroundColor: 'var(--primary-green-light)', padding: '10px', borderRadius: '4px' }}><strong>ตรวจเสร็จเมื่อ:</strong> {new Date(sub.completedAt).toLocaleDateString('th-TH')}</div>}
                                     </div>
                                     {sub.images?.length > 0 && (
