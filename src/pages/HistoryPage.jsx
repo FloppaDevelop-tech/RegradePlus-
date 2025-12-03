@@ -93,7 +93,7 @@ const HistoryPage = ({ submissions, onNavigate, onLogout, onViewImage }) => {
                                         <div><strong>รหัสวิชา:</strong> {sub.subjectCode}</div>
                                         <div style={{ gridColumn: '1 / -1' }}><strong>ชื่อวิชา:</strong> {sub.subjectName}</div>
                                         <div><strong>ติด:</strong> {sub.type}</div>
-                                        <div><strong>ชั้นที่ติด-ปีการศึกษา:</strong> {sub.gradeYear}</div>
+                                        <div><strong>ชั้นที่ติด-เทอม-ปีการศึกษา:</strong> {sub.gradeYear}</div>
                                         <div style={{ gridColumn: '1 / -1' }}><strong>วันที่ส่ง:</strong> {new Date(sub.submittedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                                         {sub.completedAt && <div style={{ gridColumn: '1 / -1', backgroundColor: 'var(--primary-green-light)', padding: '10px', borderRadius: '4px' }}><strong>ตรวจเสร็จเมื่อ:</strong> {new Date(sub.completedAt).toLocaleDateString('th-TH')}</div>}
                                     </div>
