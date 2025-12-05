@@ -67,6 +67,7 @@ const HistoryPage = ({ submissions, onNavigate, onLogout, onViewImage }) => {
                                 <div style={{ flex: 1 }}>
                                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px', color: 'var(--text-primary)' }}>{sub.subjectName} ({sub.subjectCode})</h3>
                                     <p style={{ margin: '5px 0', color: 'var(--text-secondary)' }}>ติด {sub.type} | ส่งเมื่อ {new Date(sub.submittedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                                    {sub.completedAt && <p style={{ margin: '5px 0', color: '#4CAF50', fontWeight: '500' }}>✓ ตรวจเมื่อ {new Date(sub.completedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>}
                                 </div>
                                 <div className={`status-badge ${getStatusColor(sub.status)}`} style={{ padding: '8px 16px' }}>{sub.status}</div>
                             </div>
@@ -79,6 +80,28 @@ const HistoryPage = ({ submissions, onNavigate, onLogout, onViewImage }) => {
                                         <strong style={{ color: '#4CAF50', fontSize: '14px' }}>หมายเหตุจากครู:</strong>
                                     </div>
                                     <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.5' }}>{sub.adminNote}</p>
+                                </div>
+                            )}
+
+                            {/* Grading Result */}
+                            {sub.gradingStatus && (
+                                <div style={{ marginTop: '12px', padding: '12px', backgroundColor: sub.gradingStatus === 'ผ่าน' ? '#f0fdf4' : '#fef2f2', borderLeft: `3px solid ${sub.gradingStatus === 'ผ่าน' ? '#4CAF50' : '#f44336'}`, borderRadius: '6px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                                        <span style={{
+                                            display: 'inline-block',
+                                            padding: '4px 10px',
+                                            borderRadius: '4px',
+                                            backgroundColor: sub.gradingStatus === 'ผ่าน' ? '#4CAF50' : '#f44336',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            fontSize: '13px'
+                                        }}>
+                                            {sub.gradingStatus}
+                                        </span>
+                                    </div>
+                                    {sub.gradingComment && (
+                                        <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.5' }}>{sub.gradingComment}</p>
+                                    )}
                                 </div>
                             )}
 

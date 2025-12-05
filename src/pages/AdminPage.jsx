@@ -3,7 +3,7 @@ import { Search, LogOut, Edit2, Trash2, RotateCcw, Trash, ZoomIn, ChevronDown, C
 import EditSubmissionDialog from '../components/EditSubmissionDialog';
 import ExportButton from '../components/ExportButton';
 
-const AdminPage = ({ submissions, onLogout, onUpdateStatus, onDelete, onRestore, onPermanentDelete, onViewImage, onUpdateSubmission, onUpdateNote, onExport }) => {
+const AdminPage = ({ submissions, onLogout, onUpdateStatus, onDelete, onRestore, onPermanentDelete, onViewImage, onUpdateSubmission, onUpdateNote, onUpdateGrading, onExport }) => {
     const [localSearchTerm, setLocalSearchTerm] = useState('');
     const [localSearchType, setLocalSearchType] = useState('name');
     const [activeTab, setActiveTab] = useState('active');
@@ -15,6 +15,8 @@ const AdminPage = ({ submissions, onLogout, onUpdateStatus, onDelete, onRestore,
     const [editingNote, setEditingNote] = useState(null);
     const [noteText, setNoteText] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [editingGrading, setEditingGrading] = useState(null);
+    const [gradingData, setGradingData] = useState({ status: null, comment: '' });
 
     const toggleSubItem = (studentId, id) => {
         const key = `${studentId}-${id}`;
@@ -30,6 +32,17 @@ const AdminPage = ({ submissions, onLogout, onUpdateStatus, onDelete, onRestore,
         onUpdateNote(id, noteText);
         setEditingNote(null);
         setNoteText('');
+    };
+
+    const handleEditGrading = (sub) => {
+        setEditingGrading(sub.id);
+        setGradingData({ status: sub.gradingStatus || null, comment: sub.gradingComment || '' });
+    };
+
+    const handleSaveGrading = (id) => {
+        onUpdateGrading(id, gradingData.status, gradingData.comment);
+        setEditingGrading(null);
+        setGradingData({ status: null, comment: '' });
     };
 
     const filteredSubmissions = submissions.filter(sub => {
@@ -157,6 +170,7 @@ const AdminPage = ({ submissions, onLogout, onUpdateStatus, onDelete, onRestore,
                                                                 <div style={{ marginBottom: '8px', color: 'var(--text-secondary)' }}>ส่งเมื่อ: <span style={{ color: 'var(--text-primary)' }}>{new Date(sub.submittedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span></div>
                                                                 <div style={{ marginBottom: '8px', color: 'var(--text-secondary)' }}>ติด: <span style={{ color: 'var(--text-primary)' }}>{sub.type}</span></div>
                                                                 <div style={{ marginBottom: '8px', color: 'var(--text-secondary)', wordBreak: 'break-word' }}>ชั้นที่ติด-เทอม-ปีการศึกษา: <span style={{ color: 'var(--text-primary)' }}>{sub.gradeYear}</span></div>
+                                                                {sub.email && <div style={{ marginBottom: '8px', color: 'var(--text-secondary)', wordBreak: 'break-word' }}>อีเมล: <span style={{ color: 'var(--text-primary)' }}>{sub.email}</span></div>}
                                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '15px' }}>
                                                                     <strong style={{ color: 'var(--text-primary)' }}>สถานะ:</strong>
                                                                     <select value={sub.status} onChange={(e) => onUpdateStatus(sub.id, e.target.value)} className="form-select" style={{ width: 'auto', padding: '6px 30px 6px 12px', minWidth: '140px', height: '36px' }} onClick={(e) => e.stopPropagation()}>
@@ -191,6 +205,70 @@ const AdminPage = ({ submissions, onLogout, onUpdateStatus, onDelete, onRestore,
                                                                         )}
                                                                         <button onClick={() => handleEditNote(sub)} className="btn btn-sm btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                                                             <Edit2 size={14} /> {sub.adminNote ? 'แก้ไขหมายเหตุ' : 'เพิ่มหมายเหตุ'}
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {!sub.isDeleted && (
+                                                            <div style={{ marginBottom: '15px', padding: '15px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid #e0e0e0' }}>
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                                                    <strong style={{ color: 'var(--text-primary)', fontSize: '14px' }}>ผลการตรวจ:</strong>
+                                                                </div>
+                                                                {editingGrading === sub.id ? (
+                                                                    <div>
+                                                                        <select
+                                                                            value={gradingData.status || ''}
+                                                                            onChange={(e) => setGradingData({ ...gradingData, status: e.target.value || null })}
+                                                                            className="form-select"
+                                                                            style={{ width: '100%', marginBottom: '10px', padding: '8px' }}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        >
+                                                                            <option value="">-- เลือกผลการตรวจ --</option>
+                                                                            <option value="ผ่าน">ผ่าน</option>
+                                                                            <option value="ไม่ผ่าน">ไม่ผ่าน</option>
+                                                                        </select>
+                                                                        <textarea
+                                                                            value={gradingData.comment}
+                                                                            onChange={(e) => setGradingData({ ...gradingData, comment: e.target.value })}
+                                                                            placeholder="ความคิดเห็นเกี่ยวกับผลการตรวจ..."
+                                                                            style={{ width: '100%', minHeight: '80px', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', resize: 'vertical' }}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        />
+                                                                        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                                                                            <button onClick={() => handleSaveGrading(sub.id)} className="btn btn-sm btn-primary">บันทึก</button>
+                                                                            <button onClick={() => { setEditingGrading(null); setGradingData({ status: null, comment: '' }); }} className="btn btn-sm btn-secondary">ยกเลิก</button>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div>
+                                                                        {sub.gradingStatus ? (
+                                                                            <div>
+                                                                                <div style={{ marginBottom: '10px' }}>
+                                                                                    <span style={{
+                                                                                        display: 'inline-block',
+                                                                                        padding: '6px 12px',
+                                                                                        borderRadius: '6px',
+                                                                                        backgroundColor: sub.gradingStatus === 'ผ่าน' ? '#4CAF50' : '#f44336',
+                                                                                        color: 'white',
+                                                                                        fontWeight: 'bold',
+                                                                                        fontSize: '14px'
+                                                                                    }}>
+                                                                                        {sub.gradingStatus}
+                                                                                    </span>
+                                                                                </div>
+                                                                                {sub.gradingComment && (
+                                                                                    <p style={{ margin: '0 0 10px 0', color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.6', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                                                                                        {sub.gradingComment}
+                                                                                    </p>
+                                                                                )}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <p style={{ margin: '0 0 10px 0', color: 'var(--text-secondary)', fontSize: '14px', fontStyle: 'italic' }}>ยังไม่มีผลการตรวจ</p>
+                                                                        )}
+                                                                        <button onClick={() => handleEditGrading(sub)} className="btn btn-sm btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                                            <Edit2 size={14} /> {sub.gradingStatus ? 'แก้ไขผลการตรวจ' : 'เพิ่มผลการตรวจ'}
                                                                         </button>
                                                                     </div>
                                                                 )}

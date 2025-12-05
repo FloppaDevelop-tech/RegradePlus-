@@ -11,6 +11,7 @@ import SubmitWorkPage from './pages/SubmitWorkPage';
 import HistoryPage from './pages/HistoryPage';
 import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
+import LoadingSpinner from './components/LoadingSpinner';
 import './index.css';
 
 const App = () => {
@@ -90,7 +91,7 @@ const App = () => {
           if (user) {
             setCurrentUser(user);
             localStorage.setItem('currentUser', JSON.stringify(user));
-            
+
             // Check if there's a saved page, otherwise use default
             const savedPage = localStorage.getItem('currentPage');
             if (!savedPage) {
@@ -119,10 +120,10 @@ const App = () => {
     try {
       // Try to sign in with Firebase Auth
       const authUser = await authService.loginWithEmail(email, password);
-      
+
       // Get user data from Firestore
       let user = await dataService.getUserByEmail(email);
-      
+
       if (!user) {
         // If user doesn't exist in Firestore, create from Auth data
         user = {
@@ -135,7 +136,7 @@ const App = () => {
         const updatedUsers = [...users, user];
         setUsers(updatedUsers);
       }
-      
+
       setCurrentUser(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
       const targetPage = user.isAdmin ? 'admin' : 'submit';
@@ -178,10 +179,10 @@ const App = () => {
       );
 
       // Save to Firestore
-      const newUser = { 
-        ...formData, 
+      const newUser = {
+        ...formData,
         isAdmin: !!formData.adminCode,
-        uid: authUser.uid 
+        uid: authUser.uid
       };
       await dataService.saveUser(newUser);
       const updatedUsers = [...users, newUser];
@@ -262,6 +263,8 @@ const App = () => {
         ...data,
         userEmail: currentUser?.email,
         status: 'ยังไม่ตรวจ',
+        gradingStatus: null,
+        gradingComment: '',
         submittedAt: new Date().toISOString(),
         isDeleted: false,
         isPermanentlyDeleted: false,
@@ -311,6 +314,18 @@ const App = () => {
       showPopup('เกิดข้อผิดพลาดในการบันทึกหมายเหตุ', 'error');
     }
   };
+
+  const handleUpdateGrading = async (id, gradingStatus, gradingComment) => {
+    try {
+      await dataService.updateSubmission(id, { gradingStatus, gradingComment });
+      showPopup('บันทึกผลการตรวจสำเร็จ');
+    } catch (error) {
+      console.error('Update grading error:', error);
+      showPopup('เกิดข้อผิดพลาดในการบันทึกผลการตรวจ', 'error');
+    }
+  };
+
+
 
   const deleteSubmission = async (id) => {
     try {
@@ -403,7 +418,7 @@ const App = () => {
     return (
       <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>⏳</div>
+          <LoadingSpinner />
           <p style={{ fontSize: '18px', color: 'var(--text-secondary)' }}>กำลังโหลดข้อมูล...</p>
         </div>
       </div>
@@ -453,6 +468,7 @@ const App = () => {
           onUpdateStatus={updateSubmissionStatus}
           onUpdateSubmission={handleUpdateSubmission}
           onUpdateNote={handleUpdateNote}
+          onUpdateGrading={handleUpdateGrading}
           onDelete={deleteSubmission}
           onRestore={restoreSubmission}
           onPermanentDelete={permanentDeleteSubmission}
