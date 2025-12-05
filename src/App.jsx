@@ -11,6 +11,7 @@ import SubmitWorkPage from './pages/SubmitWorkPage';
 import HistoryPage from './pages/HistoryPage';
 import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminLoginPage from './pages/AdminLoginPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import './index.css';
 
@@ -170,7 +171,8 @@ const App = () => {
         showPopup('อีเมลนี้มีผู้ใช้งานแล้ว', 'error');
         return;
       }
-      if (formData.adminCode && formData.adminCode !== 'ADMIN_TAWEETHAPISEK') {
+      const normalizedAdminCode = formData.adminCode ? formData.adminCode.trim() : '';
+      if (normalizedAdminCode && normalizedAdminCode !== 'ADMIN_TAWEETHAPISEK') {
         showPopup('รหัส Admin ไม่ถูกต้อง', 'error');
         return;
       }
@@ -182,7 +184,7 @@ const App = () => {
 
       // Save to Firestore
       const newUser = {
-        ...formData, email: normalizedRegEmail, isAdmin: !!formData.adminCode,
+        ...formData, email: normalizedRegEmail, isAdmin: !!normalizedAdminCode,
         uid: authUser.uid
       };
       await dataService.saveUser(newUser);
@@ -415,6 +417,16 @@ const App = () => {
     localStorage.setItem('currentPage', newPage);
   };
 
+  const handleNavigateHome = () => {
+    if (currentUser) {
+      const targetPage = currentUser.isAdmin ? 'admin' : 'submit';
+      setPage(targetPage);
+      localStorage.setItem('currentPage', targetPage);
+    } else {
+      setPage('login');
+    }
+  };
+
   if (loading) {
     return (
       <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -431,12 +443,21 @@ const App = () => {
       <Header
         currentUser={currentUser}
         onNavigateToProfile={handleNavigateToProfile}
+        onNavigateHome={handleNavigateHome}
       />
       <ImageViewer image={viewImage} onClose={() => setViewImage(null)} />
       <PopupNotification popup={popup} onClose={() => setPopup({ ...popup, show: false })} />
       <ConfirmLogoutDialog show={confirmLogout} onConfirm={handleLogout} onCancel={() => setConfirmLogout(false)} />
 
-      {!currentUser && <LoginPage onLogin={handleLogin} onRegister={handleRegister} onGoogleSignIn={handleGoogleSignIn} />}
+      {!currentUser && page === 'login' && <LoginPage onLogin={handleLogin} onRegister={handleRegister} onGoogleSignIn={handleGoogleSignIn} onNavigateToAdminLogin={() => setPage('admin-login')} />}
+
+      {!currentUser && page === 'admin-login' && (
+        <AdminLoginPage
+          onLogin={handleLogin}
+          onRegister={handleRegister}
+          onNavigateToLogin={() => setPage('login')}
+        />
+      )}
 
       {currentUser && !currentUser.isAdmin && page === 'submit' && (
         <SubmitWorkPage

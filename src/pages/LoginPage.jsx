@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
-const LoginPage = ({ onLogin, onRegister, onGoogleSignIn }) => {
+const LoginPage = ({ onLogin, onRegister, onGoogleSignIn, onNavigateToAdminLogin }) => {
     const [isRegister, setIsRegister] = useState(false);
-    const [formData, setFormData] = useState({ email: '', password: '', name: '', adminCode: '' });
-    const [showAdminCode, setShowAdminCode] = useState(false);
+    const [formData, setFormData] = useState({ email: '', password: '', name: '' });
     const [showPassword, setShowPassword] = useState(false);
-    const [showAdminPassword, setShowAdminPassword] = useState(false);
+    const [isGoogleHover, setIsGoogleHover] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -32,12 +31,25 @@ const LoginPage = ({ onLogin, onRegister, onGoogleSignIn }) => {
                     {isRegister && (
                         <div className="form-group" style={{ animation: 'fadeIn 0.3s ease-out' }}>
                             <label className="form-label">ชื่อ-นามสกุล</label>
-                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="form-input" />
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                required
+                                className="form-input"
+                            />
                         </div>
                     )}
                     <div className="form-group">
                         <label className="form-label">Email</label>
-                        <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="yourname@taweethapisek.ac.th" required className="form-input" />
+                        <input
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            placeholder="yourname@taweethapisek.ac.th"
+                            required
+                            className="form-input"
+                        />
                     </div>
                     <div className="form-group">
                         <label className="form-label">Password</label>
@@ -71,54 +83,11 @@ const LoginPage = ({ onLogin, onRegister, onGoogleSignIn }) => {
                             </button>
                         </div>
                     </div>
-                    {isRegister && (
-                        <div className="form-group" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '8px', transition: 'all 0.3s' }}>
-                                <input type="checkbox" checked={showAdminCode} onChange={(e) => setShowAdminCode(e.target.checked)} style={{ marginRight: '10px', width: '18px', height: '18px', cursor: 'pointer' }} />
-                                <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>ฉันเป็น Admin (ต้องมีรหัส Admin)</span>
-                            </label>
-                            {showAdminCode && (
-                                <div style={{ marginTop: '12px', animation: 'fadeIn 0.3s ease-out' }}>
-                                    <label className="form-label">รหัส Admin</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <input
-                                            type={showAdminPassword ? "text" : "password"}
-                                            value={formData.adminCode}
-                                            onChange={(e) => setFormData({ ...formData, adminCode: e.target.value })}
-                                            placeholder="กรุณาใส่รหัส Admin"
-                                            className="form-input"
-                                            style={{ paddingRight: '45px' }}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowAdminPassword(!showAdminPassword)}
-                                            style={{
-                                                position: 'absolute',
-                                                right: '12px',
-                                                top: '50%',
-                                                transform: 'translateY(-50%)',
-                                                background: 'none',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                color: 'var(--text-secondary)',
-                                                padding: '4px',
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}
-                                        >
-                                            {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
                     <button type="submit" className="btn btn-primary btn-full" style={{ marginTop: '10px' }}>
                         {isRegister ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
                     </button>
                 </form>
 
-                {/* Google Sign-In */}
                 {!isRegister && (
                     <>
                         <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0', gap: '12px' }}>
@@ -129,9 +98,11 @@ const LoginPage = ({ onLogin, onRegister, onGoogleSignIn }) => {
                         <button
                             type="button"
                             onClick={onGoogleSignIn}
+                            onMouseEnter={() => setIsGoogleHover(true)}
+                            onMouseLeave={() => setIsGoogleHover(false)}
                             className="btn btn-full"
                             style={{
-                                backgroundColor: 'white',
+                                backgroundColor: isGoogleHover ? '#f8f9fa' : 'white',
                                 color: '#333',
                                 border: '1px solid var(--border-color)',
                                 display: 'flex',
@@ -139,15 +110,9 @@ const LoginPage = ({ onLogin, onRegister, onGoogleSignIn }) => {
                                 justifyContent: 'center',
                                 gap: '12px',
                                 fontWeight: '500',
-                                transition: 'all 0.3s'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.target.style.backgroundColor = '#f8f9fa';
-                                e.target.style.borderColor = '#999';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.target.style.backgroundColor = 'white';
-                                e.target.style.borderColor = 'var(--border-color)';
+                                transition: 'all 0.3s ease',
+                                boxShadow: isGoogleHover ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+                                transform: isGoogleHover ? 'translateY(-2px)' : 'translateY(0)'
                             }}
                         >
                             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -165,14 +130,32 @@ const LoginPage = ({ onLogin, onRegister, onGoogleSignIn }) => {
                     <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
                         {isRegister ? 'มีบัญชีแล้ว?' : 'ยังไม่มีบัญชี?'}
                     </span>
-                    <button onClick={() => {
-                        setIsRegister(!isRegister);
-                        setFormData({ email: '', password: '', name: '', adminCode: '' });
-                        setShowAdminCode(false);
-                        setShowPassword(false);
-                        setShowAdminPassword(false);
-                    }} className="btn-outline" type="button">
+                    <button
+                        onClick={() => {
+                            setIsRegister(!isRegister);
+                            setFormData({ email: '', password: '', name: '' });
+                            setShowPassword(false);
+                        }}
+                        className="btn-outline"
+                        type="button"
+                    >
                         {isRegister ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก'}
+                    </button>
+                </div>
+
+                <div style={{ textAlign: 'center', marginTop: '8px' }}>
+                    <button
+                        onClick={onNavigateToAdminLogin}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--text-secondary)',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            textDecoration: 'underline'
+                        }}
+                    >
+                        เข้าสู่ระบบสำหรับครู/Admin
                     </button>
                 </div>
             </div>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { User } from 'lucide-react';
 
-const Header = ({ currentUser, onNavigateToProfile }) => (
+import logo from '../assets/logo.png';
+
+const Header = ({ currentUser, onNavigateToProfile, onNavigateHome }) => (
     <header style={{
         backgroundColor: 'white',
         padding: '15px 20px',
@@ -11,10 +13,24 @@ const Header = ({ currentUser, onNavigateToProfile }) => (
         alignItems: 'center',
         justifyContent: 'space-between'
     }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '32px', height: '32px', backgroundColor: '#4CAF50', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
-                R+
-            </div>
+        <div
+            onClick={onNavigateHome}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                cursor: 'pointer'
+            }}
+        >
+            <img
+                src={logo}
+                alt="RegradePlus Logo"
+                style={{
+                    width: '40px',
+                    height: '40px',
+                    objectFit: 'contain'
+                }}
+            />
             <div>
                 <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: '#333', margin: 0 }}>RegradePlus</h1>
                 <p style={{ fontSize: '12px', color: '#7f8c8d', margin: '2px 0 0 0' }}>กลุ่มสาระการเรียนรู้ วิทยาศาสตร์ & เทคโนโลยี</p>
