@@ -119,15 +119,17 @@ const App = () => {
   const handleLogin = async (email, password) => {
     try {
       // Try to sign in with Firebase Auth
-      const authUser = await authService.loginWithEmail(email, password);
+      // Normalize email to lowercase
+      const normalizedEmail = email.toLowerCase().trim();
+      const authUser = await authService.loginWithEmail(normalizedEmail, password);
 
       // Get user data from Firestore
-      let user = await dataService.getUserByEmail(email);
+      let user = await dataService.getUserByEmail(normalizedEmail);
 
       if (!user) {
         // If user doesn't exist in Firestore, create from Auth data
         user = {
-          email: authUser.email,
+          email: normalizedEmail,
           name: authUser.name || email.split('@')[0],
           password: password, // Store for backward compatibility
           isAdmin: false
@@ -146,7 +148,8 @@ const App = () => {
     } catch (error) {
       console.error('Login error:', error);
       // Fallback to local authentication for backward compatibility
-      const user = users.find(u => u.email === email && u.password === password);
+      const normalizedEmailFallback = email.toLowerCase().trim();
+      const user = users.find(u => u.email.toLowerCase() === normalizedEmailFallback && u.password === password);
       if (user) {
         setCurrentUser(user);
         localStorage.setItem('currentUser', JSON.stringify(user));
@@ -162,7 +165,8 @@ const App = () => {
 
   const handleRegister = async (formData) => {
     try {
-      if (users.some(u => u.email === formData.email)) {
+      const normalizedRegEmail = formData.email.toLowerCase().trim();
+      if (users.some(u => u.email.toLowerCase() === normalizedRegEmail)) {
         showPopup('อีเมลนี้มีผู้ใช้งานแล้ว', 'error');
         return;
       }
@@ -173,15 +177,12 @@ const App = () => {
 
       // Register with Firebase Auth
       const authUser = await authService.registerWithEmail(
-        formData.email,
-        formData.password,
-        formData.name
+        normalizedRegEmail, formData.password, formData.name
       );
 
       // Save to Firestore
       const newUser = {
-        ...formData,
-        isAdmin: !!formData.adminCode,
+        ...formData, email: normalizedRegEmail, isAdmin: !!formData.adminCode,
         uid: authUser.uid
       };
       await dataService.saveUser(newUser);
